@@ -19,8 +19,8 @@ public:
     HomogeneousMagField(double bz): bz_(bz) {}
     ~HomogeneousMagField() {}
     virtual double aphi(double z, double r) const;
-    virtual double aphi2z(double z, double r) const = 0;
-    virtual double aphi2r(double z, double r) const = 0;
+    virtual double aphi2z(double z, double r) const;
+    virtual double aphi2r(double z, double r) const;
     virtual double br(double z, double r) const;
     virtual double bz(double z, double r) const;
 private:

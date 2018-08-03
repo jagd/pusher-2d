@@ -1,9 +1,36 @@
 cmake_minimum_required(VERSION 2.8)
-
 project(aphi-pusher)
-add_executable(
-    ${PROJECT_NAME}
-    "src/main.cc"
-    "src/magfield.h"
-    "src/magfield.cc"
-    )
+
+include(cmake/compiler.cmake)
+include_directories("${CMAKE_SOURCE_DIR}")
+
+option(BUILD_TEST "Build Tests" ON)
+if (BUILD_TEST)
+option(SYSTEM_GTEST "use system-wide gtest" ON)
+endif (BUILD_TEST)
+if (BUILD_TEST)
+    find_package(GTest QUIET)
+    if (NOT GTEST_FOUND)
+        message("system-wide gtest cannot be found, using builtin gtest")
+        set(SYSTEM_GTEST OFF)
+    endif (NOT GTEST_FOUND)
+    if (NOT SYSTEM_GTEST)
+        add_subdirectory(googletest/googletest)
+        set(GTEST_FOUND ON CACHE BOOL "" FORCE)
+        set(GTEST_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/googletest/googletest/include CACHE PATH "" FORCE)
+        find_library(GTEST_LIBRARY gtest HINTS ${CMAKE_CURRENT_BINARY_DIR}/googletest/googletest)
+        find_library(GTEST_LIBRARY gtest_main HINTS ${CMAKE_CURRENT_BINARY_DIR}/googletest/googletest)
+        set(GTEST_BOTH_LIBRARIES gtest gtest_main CACHE STRING "" FORCE)
+    endif (NOT SYSTEM_GTEST)
+    include_directories(${GTEST_INCLUDE_DIR})
+    enable_testing()
+endif (BUILD_TEST)
+
+################## Buid Test ######################
+if (BUILD_TEST)
+    include(cmake/test.cmake)
+    include(cmake/coverage.cmake)
+    add_subdirectory(tests)
+endif (BUILD_TEST)
+
+add_subdirectory(pusher)
