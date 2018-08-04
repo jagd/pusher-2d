@@ -17,12 +17,12 @@ class HomogeneousMagField : public IStaticMagField
 {
 public:
     HomogeneousMagField(double bz): bz_(bz) {}
-    ~HomogeneousMagField() {}
-    virtual double aphi(double z, double r) const;
-    virtual double aphi2z(double z, double r) const;
-    virtual double aphi2r(double z, double r) const;
-    virtual double br(double z, double r) const;
-    virtual double bz(double z, double r) const;
+    ~HomogeneousMagField() = default;
+    virtual double aphi(double z, double r) const override;
+    virtual double aphi2z(double z, double r) const override;
+    virtual double aphi2r(double z, double r) const override;
+    virtual double br(double z, double r) const override;
+    virtual double bz(double z, double r) const override;
 private:
     const double bz_;
 };
