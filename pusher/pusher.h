@@ -17,7 +17,7 @@ public:
         std::shared_ptr<IStaticEField>,
         std::shared_ptr<IStaticMagField>
     );
-    virtual ~IPusher2D() = default;
+    virtual ~IPusher2D();
     virtual void step(double dt) = 0;
 protected:
     std::shared_ptr<IStaticEField> efield_;
@@ -45,5 +45,10 @@ private:
     PV3D uLastHalf_; //! u := gamma * v
     PV3D gammaAtPos_;
 };
+
+
+double v2gamma(double v);
+double u2gamma(double u);
+double v2u(double v);
 
 #endif // PUSHER_H

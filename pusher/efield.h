@@ -8,7 +8,7 @@ public:
     virtual double pot(double, double) const;
     virtual double ez(double, double) const = 0;
     virtual double er(double, double) const = 0;
-    virtual ~IStaticEField() = 0;
+    virtual ~IStaticEField();
 };
 
 class ZeroEField: public IStaticEField
