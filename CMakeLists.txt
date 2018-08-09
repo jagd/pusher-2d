@@ -34,3 +34,4 @@ if (BUILD_TEST)
 endif (BUILD_TEST)
 
 add_subdirectory(pusher)
+add_subdirectory(benchmark)
