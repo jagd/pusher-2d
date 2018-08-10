@@ -93,14 +93,14 @@ double APhiPusher::pTheta(double z, double r, double uTheta) const
 
 void APhiPusher::step(double dt)
 {
-    const double prqamg = (Q0/M0/gamma()) * (
+    const double prqamg = (
         pTheta_/pos_.r - Q0*magfield_->aTheta(pos_.z, pos_.r)
-    );
+    ) / (M0*gamma()) ;
     const double dgdu = Q0/(M0*C0*C0);
     const double fz = -Q0*prqamg*magfield_->aTheta2z(pos_.z, pos_.r)
                       +(prqamg*prqamg*(M0/2)*dgdu - Q0) * efield_->ez(pos_.z, pos_.r);
     const double fr = (pos_.r == 0) ? 0 :
-        -prqamg*(pTheta_/(pos_.r*pos_.r)+Q0*magfield_->aTheta2r(pos_.z, pos_.r))
+        -prqamg*(pTheta_/(pos_.r*pos_.r)-Q0*magfield_->aTheta2r(pos_.z, pos_.r))
         +(prqamg*prqamg*(M0/2) - Q0) * dgdu*efield_->er(pos_.z, pos_.r);
     const PV2D f(fz, fr);
     const PV2D uNextHalf = f/M0*dt + uLastHalf_;

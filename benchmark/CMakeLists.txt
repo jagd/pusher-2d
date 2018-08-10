@@ -4,3 +4,7 @@ target_link_libraries(planar-largeorbit-boris-demo aphi-pusher)
 
 add_executable(planar-largeorbit-boris planar-largeorbit-boris.cc)
 target_link_libraries(planar-largeorbit-boris aphi-pusher)
+
+add_executable(planar-smallorbit-aphi-demo planar-smallorbit-aphi.cc)
+target_compile_definitions(planar-smallorbit-aphi-demo PRIVATE DEMO)
+target_link_libraries(planar-smallorbit-aphi-demo aphi-pusher)

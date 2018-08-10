@@ -53,6 +53,7 @@ TEST(APhi, PlainLargeOrbit) {
     for (int i = 0; i < 10; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
+        ASSERT_EQ(0, p.z);
         ASSERT_NEAR(r, p.r, r*1e-12);
     }
 }
