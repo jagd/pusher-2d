@@ -48,11 +48,35 @@ TEST(APhi, PlainLargeOrbit) {
     const auto mf = std::make_shared<HomogeneousMagField>(B);
     auto pusher = APhiPusher(ef, mf);
 
-    double dt = 1e-13;
+    const double dt = 1e-13;
     pusher.setElectronInfo(0, r, 0, 0, pusher.pTheta(0, r, u));
     for (int i = 0; i < 10; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
         ASSERT_NEAR(r, p.r, r*1e-12);
+    }
+}
+
+
+TEST(APhi, PlainSmallOrbit) {
+    const double B = 1.0; // f ~ 28 GHz
+    const double u = 1e8; // f ~ 26 GHz considering gamma
+    const double rLarmor = -M0/Q0/B * u;
+    const double gamma = u2gamma(u);
+    const double v = u/gamma;
+    const double omega = v/rLarmor;
+
+    const auto ef = std::make_shared<ZeroEField>();
+    const auto mf = std::make_shared<HomogeneousMagField>(B);
+    auto pusher = APhiPusher(ef, mf);
+
+    const double offset = 2*rLarmor;
+    const double dt = 1e-13;
+    pusher.setElectronInfo(0, offset+rLarmor, 0, 0, pusher.pTheta(0, offset+rLarmor, u));
+    for (int i = 0; i < 10; ++i) {
+        pusher.step(dt);
+        const auto p = pusher.pos();
+        const double rSoll = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i+1)));
+        ASSERT_NEAR(rSoll, p.r, rLarmor*1e-6);
     }
 }
