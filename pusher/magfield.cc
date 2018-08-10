@@ -18,17 +18,17 @@ double HomogeneousMagField::bz(double, double) const
     return bz_;
 }
 
-double HomogeneousMagField::aphi(double, double r) const
+double HomogeneousMagField::aTheta(double, double r) const
 {
     return bz_*r/2;
 }
 
-double HomogeneousMagField::aphi2z(double, double) const
+double HomogeneousMagField::aTheta2z(double, double) const
 {
     return 0;
 }
 
-double HomogeneousMagField::aphi2r(double, double) const
+double HomogeneousMagField::aTheta2r(double, double) const
 {
     return bz_/2;
 }

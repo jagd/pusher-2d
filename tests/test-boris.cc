@@ -60,7 +60,7 @@ TEST(Boris, ZeroFieldsWithMotion) {
 }
 
 
-TEST(Boris, PlainCyclotron) {
+TEST(Boris, PlainLargeOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double r = -M0/Q0/B * u;

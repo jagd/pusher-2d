@@ -39,11 +39,32 @@ inline PV2D &operator+=(PV2D &a, const PV2D &b)
     return a;
 }
 
+inline PV2D &operator-=(PV2D &a, const PV2D &b)
+{
+    a.z -= b.z;
+    a.r -= b.r;
+    return a;
+}
+
 inline PV2D &operator*=(PV2D &v, double a)
 {
     v.z *= a;
     v.r *= a;
     return v;
+}
+
+inline PV2D operator+(const PV2D &a, const PV2D &b)
+{
+    auto x = a;
+    x += b;
+    return x;
+}
+
+inline PV2D operator-(const PV2D &a, const PV2D &b)
+{
+    auto x = a;
+    x -= b;
+    return x;
 }
 
 inline PV2D &operator/=(PV2D &v, double a)

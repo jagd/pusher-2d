@@ -8,3 +8,9 @@ TEST_REGISTER(Boris
     test-boris.cc
 )
 TEST_LINK_LIBRARY(Boris ${PROJECT_NAME})
+
+
+TEST_REGISTER(APhi
+    test-aphi.cc
+)
+TEST_LINK_LIBRARY(APhi ${PROJECT_NAME})

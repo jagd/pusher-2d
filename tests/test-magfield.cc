@@ -13,11 +13,11 @@ TEST(HomogeneousMagField, Validate) {
     const double r = 30;
     const double z = 100.0;
     ASSERT_DOUBLE_EQ(b, m.bz(z, r));
-    ASSERT_DOUBLE_EQ(r*r*b/2, r*m.aphi(z, r));
+    ASSERT_DOUBLE_EQ(r*r*b/2, r*m.aTheta(z, r));
     double eps = 1e-6;
     ASSERT_NEAR(
-        m.aphi2r(z, r),
-        (m.aphi(z, r+eps/2) - m.aphi(z, r-eps/2))/eps,
-        m.aphi2r(z, r)*1e-6
+        m.aTheta2r(z, r),
+        (m.aTheta(z, r+eps/2) - m.aTheta(z, r-eps/2))/eps,
+        m.aTheta2r(z, r)*1e-6
     );
 }

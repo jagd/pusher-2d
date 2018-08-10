@@ -46,6 +46,30 @@ private:
     PV3D gammaAtPos_;
 };
 
+class APhiPusher: public IPusher2D
+{
+public:
+    APhiPusher(
+        std::shared_ptr<IStaticEField> e,
+        std::shared_ptr<IStaticMagField> m
+    ): IPusher2D(e, m) {}
+    double pTheta(double z, double r, double uTheta) const;
+    void step(double dt) override;
+    void setElectronInfo(
+        double z, double r,
+        double uzLastHalf, double urLastHalf,
+        double pTheta,
+        double gamma = 0
+    );
+    PV2D pos() const;
+    PV2D u() const;
+    double gamma() const;
+private:
+    PV2D pos_;
+    PV2D uLastHalf_;
+    double pTheta_;
+    double totalEnergy_; //! in Volt, with signed Ekin, sign dep. on sign of charge
+};
 
 double v2gamma(double v);
 double u2gamma(double u);

@@ -1,6 +1,25 @@
 #include "pusher.h"
 #include "pv.h"
 #include <cmath>
+#include <cassert>
+
+double v2gamma(double v)
+{
+    return 1.0/(std::sqrt(1.0-v*v/(C0*C0)));
+}
+
+
+double v2u(double v)
+{
+    return v2gamma(v)*v;
+}
+
+
+double u2gamma(double u)
+{
+    return std::sqrt(1.0+u*u/(C0*C0));
+}
+
 
 IPusher2D::IPusher2D(
     std::shared_ptr<IStaticEField> e,
@@ -65,17 +84,65 @@ PV3D BorisPusher::gamma() const
     return gammaAtPos_;
 }
 
-double v2gamma(double v)
+
+double APhiPusher::pTheta(double z, double r, double uTheta) const
 {
-    return 1.0/(std::sqrt(1.0-v*v/(C0*C0)));
+    return r*(uTheta*M0 + magfield_->aTheta(z, r)*Q0);
 }
 
-double v2u(double v)
+
+void APhiPusher::step(double dt)
 {
-    return v2gamma(v)*v;
+    const double prqamg = (Q0/M0/gamma()) * (
+        pTheta_/pos_.r - Q0*magfield_->aTheta(pos_.z, pos_.r)
+    );
+    const double dgdu = Q0/(M0*C0*C0);
+    const double fz = -Q0*prqamg*magfield_->aTheta2z(pos_.z, pos_.r)
+                      +(prqamg*prqamg*(M0/2)*dgdu - Q0) * efield_->ez(pos_.z, pos_.r);
+    const double fr = (pos_.r == 0) ? 0 :
+        -prqamg*(pTheta_/(pos_.r*pos_.r)+Q0*magfield_->aTheta2r(pos_.z, pos_.r))
+        +(prqamg*prqamg*(M0/2) - Q0) * dgdu*efield_->er(pos_.z, pos_.r);
+    const PV2D f(fz, fr);
+    const PV2D uNextHalf = f/M0*dt + uLastHalf_;
+    pos_ = uNextHalf*dt + pos_;
+    uLastHalf_ = uNextHalf;
 }
 
-double u2gamma(double u)
+
+void APhiPusher::setElectronInfo(
+    double z,
+    double r,
+    double uzLastHalf,
+    double urLastHalf,
+    double pTheta,
+    double gamma
+)
 {
-    return std::sqrt(1.0+u*u/(C0*C0));
+    pos_ = PV2D(z, r);
+    uLastHalf_ = PV2D(uzLastHalf, urLastHalf);
+    pTheta_ = pTheta;
+    if (gamma < 1.0) {
+        const double uTheta = (pTheta / r-(magfield_->aTheta(z, r)*Q0))/M0;
+        gamma = u2gamma(std::sqrt(uzLastHalf*uzLastHalf + urLastHalf*urLastHalf + uTheta*uTheta));
+    }
+    totalEnergy_ = (gamma - 1) * (M0*C0*C0/Q0) + efield_->pot(z, r);
+    // for electron: Ekin < 0 !! no problem with "+ efield"
+}
+
+double APhiPusher::gamma() const
+{
+    const double Ekin = totalEnergy_-efield_->pot(pos_.z, pos_.r);
+    const double gamma = 1+Ekin*(Q0/(M0*C0*C0));
+    assert(gamma >= 1.0);
+    return gamma;
+}
+
+PV2D APhiPusher::u() const
+{
+    return uLastHalf_;
+}
+
+PV2D APhiPusher::pos() const
+{
+    return pos_;
 }
