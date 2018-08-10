@@ -78,6 +78,6 @@ TEST(Boris, PlainCyclotron) {
     for (int i = 0; i < 10; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
-        ASSERT_NEAR(r, std::sqrt(p.x*p.x+p.y*p.y), r*1e-3);
+        ASSERT_NEAR(r, std::sqrt(p.x*p.x+p.y*p.y), r*1e-6);
     }
 }
