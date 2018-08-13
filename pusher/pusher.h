@@ -54,6 +54,7 @@ public:
         std::shared_ptr<IStaticMagField> m
     ): IPusher2D(e, m) {}
     double pTheta(double z, double r, double uTheta) const;
+    double pTheta() const {return pTheta_;}
     void step(double dt) override;
     void setElectronInfo(
         double z, double r,
