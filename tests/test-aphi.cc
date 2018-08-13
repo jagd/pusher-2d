@@ -81,3 +81,22 @@ TEST(APhi, PlainSmallOrbit) {
         ASSERT_NEAR(rSoll, p.r, rLarmor*1e-6);
     }
 }
+
+
+TEST(APhi, OnlyMirOscZEField) {
+    const auto ef = std::make_shared<MirOscZEField>(10e3/10e-2);
+    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    auto pusher = APhiPusher(ef, mf);
+
+    const double dt = 1e-13;
+    const double  r = 1e-2;
+    pusher.setElectronInfo(10e-2, r, 0, 0, pusher.pTheta(10e-2, r, 0));
+    const double totalEnergy = ef->pot(10e-2, 0);
+    for (int i = 0; i < 100; ++i) {
+        pusher.step(dt);
+        const auto p = pusher.pos();
+        const double potEnergy = ef->pot(p.z, 0);
+        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0/Q0);
+        ASSERT_NEAR(totalEnergy, potEnergy+kinEnergy, std::abs(totalEnergy)*1e-12);
+    }
+}

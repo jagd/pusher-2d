@@ -38,12 +38,12 @@ public:
     virtual void step(double dt) override;
     PV3D pos() const;
     PV3D u() const;
-    PV3D gamma() const;
+    double gamma() const;
 
 private:
     PV3D pos_;
     PV3D uLastHalf_; //! u := gamma * v
-    PV3D gammaAtPos_;
+    double gammaAtPos_;
 };
 
 class APhiPusher: public IPusher2D

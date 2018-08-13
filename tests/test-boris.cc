@@ -106,3 +106,21 @@ TEST(Boris, PlainSmallOrbit) {
         ASSERT_NEAR(rSoll, std::sqrt(p.x*p.x+p.y*p.y), rLarmor*1e-6);
     }
 }
+
+
+TEST(Boris, OnlyMirOscZEField) {
+    const auto ef = std::make_shared<MirOscZEField>(10e3/10e-2);
+    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    auto pusher = BorisPusher(ef, mf);
+
+    const double dt = 1e-13;
+    pusher.setElectronInfo(1, 0, -10e-2, 0, 0, 0);
+    const double totalEnergy = ef->pot(10e-2, 0);
+    for (int i = 0; i < 100; ++i) {
+        pusher.step(dt);
+        const auto p = pusher.pos();
+        const double potEnergy = ef->pot(p.z, 0);
+        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0/Q0);
+        ASSERT_NEAR(totalEnergy, potEnergy+kinEnergy, std::abs(totalEnergy)*1e-12);
+    }
+}

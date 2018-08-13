@@ -64,6 +64,7 @@ void BorisPusher::step(double dt)
     const PV3D uNextHalf = uPlus + (Q0/2*M0)*dt*e3d;
     pos_ = pos_ + dt/(std::sqrt(1+dot(uNextHalf, uNextHalf)/(C0*C0))) * uNextHalf;
     uLastHalf_ = uNextHalf;
+    gammaAtPos_ = gammaN;
 }
 
 
@@ -79,7 +80,7 @@ PV3D BorisPusher::u() const
 }
 
 
-PV3D BorisPusher::gamma() const
+double BorisPusher::gamma() const
 {
     return gammaAtPos_;
 }
