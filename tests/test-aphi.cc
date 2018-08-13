@@ -72,9 +72,9 @@ TEST(APhi, PlainSmallOrbit) {
     auto pusher = APhiPusher(ef, mf);
 
     const double offset = 2*rLarmor;
-    const double dt = 1e-13;
+    const double dt = 1e-16;
     pusher.setElectronInfo(0, offset+rLarmor, 0, 0, pusher.pTheta(0, offset+rLarmor, u));
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 10000; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double rSoll = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i+1)));
