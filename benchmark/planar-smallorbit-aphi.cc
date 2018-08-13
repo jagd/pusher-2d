@@ -22,23 +22,24 @@ int main()
         std::clog << "steps: " << steps << " ; 3D step width: " << dt*v << '\n';
         pusher.setElectronInfo(0, offset+rLarmor, 0, 0, pusher.pTheta(0, offset+rLarmor, u));
 #ifdef DEMO
-        int64_t trigger = 0;
+        int64_t trigger = static_cast<int64_t>(6.0/omega/dt);
         for (int64_t i = 0; i < steps; ++i) {
-            pusher.step(dt);
-            ++trigger;
             if (trigger*omega*dt > 0.1745) { // every ~10 degree
                 const auto p = pusher.pos();
                 std::cout << v*dt*i << ' ' <<  p.r << '\n';
                 trigger = 0;
             }
+            pusher.step(dt);
+            ++trigger;
         }
         std::cout << '\n';
 #else
         double tol = 0;
         for (int64_t i = 0; i < steps; ++i) {
             pusher.step(dt);
+            const double rSoll = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i+1)));
             const auto p = pusher.pos();
-            tol = std::max(tol, std::abs((fromPV3D(p).r-r)/r));
+            tol = std::max(tol, std::abs((p.r-rSoll)/rSoll));
         }
         std::cout << v*dt << ' ' << tol << '\n';
 #endif
