@@ -13,6 +13,8 @@ public:
     virtual double bz(double z, double r) const = 0;
 };
 
+
+/// A zero field can be created if ctor(0)
 class HomogeneousMagField : public IStaticMagField
 {
 public:
