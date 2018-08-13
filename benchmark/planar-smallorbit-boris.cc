@@ -22,7 +22,7 @@ int main()
         std::clog << "steps: " << steps << " ; 3D step width: " << dt*v << '\n';
         const double startAngle = dt * omega/2;
         const double offset = 2*rLarmor;
-    pusher.setElectronInfo(offset+rLarmor*std::cos(startAngle), rLarmor*std::sin(startAngle),0, 0, u, 0);
+        pusher.setElectronInfo(offset+rLarmor*std::cos(startAngle), rLarmor*std::sin(startAngle),0, 0, u, 0);
 #ifdef DEMO
         int64_t trigger = static_cast<int64_t>(6.0/omega/dt);
         for (int64_t i = 0; i < steps; ++i) {
