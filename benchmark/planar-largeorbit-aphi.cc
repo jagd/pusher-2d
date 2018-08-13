@@ -27,7 +27,7 @@ int main()
             ++trigger;
             if (trigger*omega*dt > 0.1745) { // every ~10 degree
                 const auto p = pusher.pos();
-                std::cout << v*dt*i << ' ' <<  (p.r-r)/r << '\n';
+                std::cout << omega*dt*i << ' ' <<  (p.r-r)/r << '\n';
                 trigger = 0;
             }
         }
@@ -39,7 +39,7 @@ int main()
             const auto p = pusher.pos();
             tol = std::max(tol, std::abs((p.r-r)/r));
         }
-        std::cout << v*dt << ' ' << tol << '\n';
+        std::cout << omega*dt << ' ' << tol << '\n';
 #endif
     }
     return 0;

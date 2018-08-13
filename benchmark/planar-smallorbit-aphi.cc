@@ -26,7 +26,7 @@ int main()
         for (int64_t i = 0; i < steps; ++i) {
             if (trigger*omega*dt > 0.1745) { // every ~10 degree
                 const auto p = pusher.pos();
-                std::cout << v*dt*i << ' ' <<  p.r << '\n';
+                std::cout << omega*dt*i << ' ' <<  p.r << '\n';
                 trigger = 0;
             }
             pusher.step(dt);
@@ -41,7 +41,7 @@ int main()
             const auto p = pusher.pos();
             tol = std::max(tol, std::abs((p.r-rSoll)/rSoll));
         }
-        std::cout << v*dt << ' ' << tol << '\n';
+        std::cout << omega*dt << ' ' << tol << '\n';
 #endif
     }
     return 0;
