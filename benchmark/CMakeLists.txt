@@ -28,3 +28,16 @@ target_link_libraries(planar-smallorbit-boris-demo aphi-pusher)
 
 add_executable(planar-smallorbit-boris planar-smallorbit-boris.cc)
 target_link_libraries(planar-smallorbit-boris aphi-pusher)
+
+
+# Performance measurement based on small orbit benchmarks
+add_executable(planar-perf planar-perf.cc)
+target_link_libraries(planar-perf aphi-pusher)
+
+add_executable(planar-perf-boris planar-perf.cc)
+target_compile_definitions(planar-perf-boris PRIVATE BORIS_ONLY)
+target_link_libraries(planar-perf-boris aphi-pusher)
+
+add_executable(planar-perf-aphi planar-perf.cc)
+target_compile_definitions(planar-perf-aphi PRIVATE APHI_ONLY)
+target_link_libraries(planar-perf-aphi aphi-pusher)
