@@ -50,7 +50,7 @@ void BorisPusher::step(double dt)
     const PV3D posNorm = (zr.r == 0) ? PV3D(0,0,1) : (pos_/std::sqrt(dot(pos_, pos_)));
     const auto er = efield_->er(zr.z, zr.r);
     const PV3D e3d(er*posNorm.x, er*posNorm.y, efield_->ez(zr.z, zr.r));
-    const PV3D uMinus = uLastHalf_ + (Q0/2*M0)*dt*e3d;
+    const PV3D uMinus = uLastHalf_ + (Q0/2/M0)*dt*e3d;
     const double uMinusNorm2 = dot(uMinus, uMinus);
     const double gammaN = std::sqrt(1.0 + uMinusNorm2/(C0*C0));
 
@@ -61,7 +61,7 @@ void BorisPusher::step(double dt)
     const PV3D uPrime = uMinus + cross(uMinus, t);
     const PV3D uPlus = uMinus + cross(uPrime, s);
 
-    const PV3D uNextHalf = uPlus + (Q0/2*M0)*dt*e3d;
+    const PV3D uNextHalf = uPlus + (Q0/2/M0)*dt*e3d;
     pos_ = pos_ + dt/(std::sqrt(1+dot(uNextHalf, uNextHalf)/(C0*C0))) * uNextHalf;
     uLastHalf_ = uNextHalf;
     gammaAtPos_ = gammaN;

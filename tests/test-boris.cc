@@ -121,6 +121,6 @@ TEST(Boris, OnlyMirOscZEField) {
         const auto p = pusher.pos();
         const double potEnergy = ef->pot(p.z, 0);
         const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0/Q0);
-        ASSERT_NEAR(totalEnergy, potEnergy+kinEnergy, std::abs(totalEnergy)*1e-12);
+        ASSERT_NEAR(totalEnergy, potEnergy+kinEnergy, std::abs(totalEnergy)*1e-6);
     }
 }
