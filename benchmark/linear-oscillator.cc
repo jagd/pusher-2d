@@ -55,13 +55,14 @@ int main()
     const double refZ = boris.pos().z;
     std::clog << std::setprecision(20) <<  refZ << std::endl;
     */
-    const double refZ = -0.089871131212472837868;
+    const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
+//    const double refZ = 0.087713137568685900503; // for 1MV / 10cm
 
 
     const int orderOffset = 8;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
-    for (int c = pseudoOrder-orderOffset; c > -10; --c) {
+    for (int c = pseudoOrder-orderOffset; c >=0 ; --c) {
         boris.setElectronInfo(r, 0, -10e-2, 0, 0, 0);
         aphi.setElectronInfo(-10e-2, r, 0, 0, aphi.pTheta(-10e-2, r, 0));
         std::clog << "dt = " << dt << '\n';

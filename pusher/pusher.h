@@ -69,7 +69,7 @@ private:
     PV2D pos_;
     PV2D uLastHalf_;
     double pTheta_;
-    double totalEnergy_; //! in Volt, with signed Ekin, sign dep. on sign of charge
+    double totalEnergy_; //! in Volt*Q, where Q is signed
 };
 
 double v2gamma(double v);

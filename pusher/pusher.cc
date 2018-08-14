@@ -1,6 +1,7 @@
 #include "pusher.h"
 #include "pv.h"
 #include <cmath>
+#include <cassert>
 
 double v2gamma(double v)
 {
@@ -97,15 +98,37 @@ void APhiPusher::step(double dt)
     const double prqamg = (
         pTheta_/pos_.r - Q0*magfield_->aTheta(pos_.z, pos_.r)
     ) / (M0*g);
-    const double dgdu = Q0/(M0*C0*C0);
-    const double gradZ = -Q0*prqamg*magfield_->aTheta2z(pos_.z, pos_.r)
-                      +(prqamg*prqamg*(M0/2)*dgdu - Q0) * efield_->ez(pos_.z, pos_.r);
-    const double gradR = (pos_.r == 0) ? 0 :
+    //
+    // Example for an electron (Q > 0):
+    // phi increases -> Epot=phi*Q decreases -> Ekin=Etotal-Epot increases
+    //               -> Gamma=Ekin/(M0C^2) increases -> dg/dphi positive
+    // For a positive ion (Q < 0):
+    // phi increases -> Epot=phi*Q increases -> Ekin=Etotal-Epot decreases
+    //               -> Gamma=Ekin/(M0C^2) decreases -> dg/dphi negative
+    // Hence, the sign of dgamma/dphi is in -1*Q0.
+    //
+    const double dgdphi = -Q0/(M0*C0*C0);
+    const double commonTerm = (prqamg*prqamg*(M0/2)*dgdphi - Q0);
+    const double gradFz = -Q0*prqamg*magfield_->aTheta2z(pos_.z, pos_.r)
+        + commonTerm * efield_->ez(pos_.z, pos_.r);
+    const double gradFr = (pos_.r == 0) ? 0 :
         -prqamg*(pTheta_/(pos_.r*pos_.r)+Q0*magfield_->aTheta2r(pos_.z, pos_.r))
-        +(prqamg*prqamg*(M0/2) - Q0) * dgdu*efield_->er(pos_.z, pos_.r);
-    const PV2D f(-gradZ, -gradR);
+        + commonTerm * efield_->er(pos_.z, pos_.r);
+    const PV2D f(-gradFz, -gradFr);
     const PV2D uNextHalf = f/M0*dt + uLastHalf_;
+#ifdef APHI_GAMMA_CORRECTION
+    const PV2D halfDist = (uNextHalf+uLastHalf_)*(dt/4/g);
+    // gamma_corrected_{t+dt/2} = gaemma_t
+    //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
+    // The next minus is for grad(phi) = -E
+    const double gammaNextHalf = g - (
+        dgdphi*efield_->ez(pos_.z, pos_.r)*halfDist.z
+      + dgdphi*efield_->er(pos_.z, pos_.r)*halfDist.r
+    );
+    pos_ = uNextHalf/gammaNextHalf*dt + pos_;
+#else
     pos_ = uNextHalf/g*dt + pos_;
+#endif
     uLastHalf_ = uNextHalf;
 }
 
@@ -126,15 +149,14 @@ void APhiPusher::setElectronInfo(
         const double uTheta = (pTheta / r-(magfield_->aTheta(z, r)*Q0))/M0;
         gamma = u2gamma(std::sqrt(uzLastHalf*uzLastHalf + urLastHalf*urLastHalf + uTheta*uTheta));
     }
-    totalEnergy_ = (gamma - 1) * (M0*C0*C0/Q0) + efield_->pot(z, r);
-    // for electron: Ekin < 0 !! no problem with "+ efield"
+    totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
 
 double APhiPusher::gamma() const
 {
-    const double Ekin = totalEnergy_-efield_->pot(pos_.z, pos_.r);
-    const double gamma = 1.0+std::abs(Ekin*(Q0/(M0*C0*C0)));
-//    assert(gamma > 1.0 - 1e-12);
+    const double Ekin = totalEnergy_-Q0*efield_->pot(pos_.z, pos_.r);
+//    assert(Ekin >= 0);
+    const double gamma = 1.0 + Ekin/(M0*C0*C0);
     return gamma;
 }
 
