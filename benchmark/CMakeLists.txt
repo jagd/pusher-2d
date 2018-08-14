@@ -41,3 +41,11 @@ target_link_libraries(planar-perf-boris aphi-pusher)
 add_executable(planar-perf-aphi planar-perf.cc)
 target_compile_definitions(planar-perf-aphi PRIVATE APHI_ONLY)
 target_link_libraries(planar-perf-aphi aphi-pusher)
+
+# Linear oscillator
+add_executable(linear-oscillator-demo linear-oscillator.cc)
+target_compile_definitions(linear-oscillator-demo PRIVATE DEMO)
+target_link_libraries(linear-oscillator-demo aphi-pusher)
+
+add_executable(linear-oscillator linear-oscillator.cc)
+target_link_libraries(linear-oscillator aphi-pusher)
