@@ -61,9 +61,9 @@ int main()
     const int orderOffset = 8;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
-    for (int c = pseudoOrder-orderOffset; c > 1; --c) {
+    for (int c = pseudoOrder-orderOffset; c > -10; --c) {
         boris.setElectronInfo(r, 0, -10e-2, 0, 0, 0);
-        aphi.setElectronInfo(10e-2, r, 0, 0, aphi.pTheta(10e-2, r, 0));
+        aphi.setElectronInfo(-10e-2, r, 0, 0, aphi.pTheta(-10e-2, r, 0));
         std::clog << "dt = " << dt << '\n';
         for (int i = 0; i < steps; ++i) {
             aphi.step(dt);
