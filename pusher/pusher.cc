@@ -1,7 +1,6 @@
 #include "pusher.h"
 #include "pv.h"
 #include <cmath>
-#include <cassert>
 
 double v2gamma(double v)
 {
@@ -134,8 +133,8 @@ void APhiPusher::setElectronInfo(
 double APhiPusher::gamma() const
 {
     const double Ekin = totalEnergy_-efield_->pot(pos_.z, pos_.r);
-    const double gamma = 1+Ekin*(Q0/(M0*C0*C0));
-    assert(gamma >= 1.0);
+    const double gamma = 1.0+std::abs(Ekin*(Q0/(M0*C0*C0)));
+//    assert(gamma > 1.0 - 1e-12);
     return gamma;
 }
 
