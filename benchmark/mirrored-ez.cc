@@ -3,14 +3,14 @@
 #include <iomanip>
 
 
-#ifdef DEMO
-static void demoBoris(BorisPusher &boris)
+#ifdef DEMO_BORIS
+static void demoBoris(BorisPusher &boris, double zInit)
 {
-    const double zInit = -10e-2;
     double every = 1;
-    for (double dt = 1e-13; dt > 1e-16; dt *= 0.5) {
+    for (double dt = 1e-12; dt > 1e-16; dt *= 0.5) {
         boris.setElectronInfo(1, 0, zInit, 0, 0, 0);
         double counter = 0;
+        int iter = 0;
         int64_t i = 0;
         while(true) {
             ++i;
@@ -20,8 +20,10 @@ static void demoBoris(BorisPusher &boris)
                 std::cout << i*dt << ' ' << p.z << '\n';
                 counter = 0;
             }
-            if (p.z > 0) {
-                break;
+            if (((iter % 2 == 0) && (p.z > 0)) || ((iter % 2 != 0) && (p.z < 0))) {
+                if (++iter > 2) {
+                    break;
+                }
             }
         }
         std::cout << '\n';
@@ -32,18 +34,53 @@ static void demoBoris(BorisPusher &boris)
 #endif
 
 
+#ifdef DEMO_APHI
+static void demoAPhi(APhiPusher &aphi, double zInit)
+{
+    double every = 1;
+    for (double dt = 1e-12; dt > 1e-16; dt *= 0.5) {
+        aphi.setElectronInfo(zInit, 1, 0, 0, aphi.pTheta(zInit, 1, 0));
+        double counter = 0;
+        int iter = 0;
+        int64_t i = 0;
+        while(true) {
+            ++i;
+            aphi.step(dt);
+            const auto p = aphi.pos();
+            if (++counter == every) {
+                std::cout << i*dt << ' ' << p.z << '\n';
+                counter = 0;
+            }
+            if (((iter % 2 == 0) && (p.z > 0)) || ((iter % 2 != 0) && (p.z < 0))) {
+                if (++iter > 2) {
+                    break;
+                }
+            }
+        }
+        std::cout << '\n';
+        every += every;
+
+    }
+}
+#endif
+
+
+
 int main()
 {
-    const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
+    const auto ef = std::make_shared<MirroredEzField>(100e3/10e-2);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto boris = BorisPusher(ef, mf);
-
-#ifdef DEMO
-    demoBoris(boris);
-#else
     auto aphi = APhiPusher(ef, mf);
 
-    const double zInit = -10e-2;
+    const double zInit = -1e-2;
+
+#ifdef DEMO_BORIS
+    demoBoris(boris, zInit);
+#elif DEMO_APHI
+    demoAPhi(aphi, zInit);
+#else
+
     const int pseudoOrder = 30;
     int64_t maxSteps = static_cast<int64_t>(1) << pseudoOrder;
     const double minDt = 1e-18;
@@ -57,8 +94,7 @@ int main()
     const double refZ = boris.pos().z;
     std::clog << std::setprecision(20) <<  refZ << std::endl;
     */
-    const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
-//    const double refZ = 0.087713137568685900503; // for 1MV / 10cm
+    const double refZ = -0.0030687973670488798497; // for 100 kV / 10 cm
 
     const double totalEnergy = Q0*ef->pot(zInit, 0);
 

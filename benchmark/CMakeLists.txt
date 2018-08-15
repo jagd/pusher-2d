@@ -48,9 +48,13 @@ add_executable(const-ez const-ez.cc)
 target_link_libraries(const-ez aphi-pusher)
 
 # Linear oscillator
-add_executable(mirrored-ez-demo mirrored-ez.cc)
-target_compile_definitions(mirrored-ez-demo PRIVATE DEMO)
-target_link_libraries(mirrored-ez-demo aphi-pusher)
+add_executable(mirrored-ez-demo-boris mirrored-ez.cc)
+target_compile_definitions(mirrored-ez-demo-boris PRIVATE DEMO_BORIS)
+target_link_libraries(mirrored-ez-demo-boris aphi-pusher)
+
+add_executable(mirrored-ez-demo-aphi mirrored-ez.cc)
+target_compile_definitions(mirrored-ez-demo-aphi PRIVATE DEMO_APHI)
+target_link_libraries(mirrored-ez-demo-aphi aphi-pusher)
 
 add_executable(mirrored-ez mirrored-ez.cc)
 target_link_libraries(mirrored-ez aphi-pusher)
