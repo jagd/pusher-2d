@@ -11,5 +11,7 @@ add_library(aphi-pusher SHARED
 )
 
 if (APHI_GAMMA_CORRECTION)
-target_compile_definitions(aphi-pusher PRIVATE APHI_GAMMA_CORRECTION)
+    target_compile_definitions(aphi-pusher PRIVATE APHI_GAMMA_CORRECTION)
+else (APHI_GAMMA_CORRECTION)
+    message("APHI_GAMMA_CORRECTION is disabled (only for test purpose)")
 endif (APHI_GAMMA_CORRECTION)

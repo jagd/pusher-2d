@@ -58,3 +58,7 @@ target_link_libraries(mirrored-ez-demo-aphi aphi-pusher)
 
 add_executable(mirrored-ez mirrored-ez.cc)
 target_link_libraries(mirrored-ez aphi-pusher)
+
+add_executable(mirrored-ez-very-relativistic mirrored-ez.cc)
+target_compile_definitions(mirrored-ez-very-relativistic PRIVATE VERY_RELATIVISTIC)
+target_link_libraries(mirrored-ez-very-relativistic  aphi-pusher)

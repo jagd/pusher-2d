@@ -68,7 +68,12 @@ static void demoAPhi(APhiPusher &aphi, double zInit)
 
 int main()
 {
-    const auto ef = std::make_shared<MirroredEzField>(100e3/10e-2);
+#ifdef VERY_RELATIVISTIC
+    const auto ez = 1000e3/10e-2;
+#else
+    const auto ez = 100e3/10e-2;
+#endif
+    const auto ef = std::make_shared<MirroredEzField>(ez);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto boris = BorisPusher(ef, mf);
     auto aphi = APhiPusher(ef, mf);
@@ -86,15 +91,20 @@ int main()
     const double minDt = 1e-18;
     const double r = 1e-2;
     /*
-    boris.setElectronInfo(r, 0, zInit, 0, 0, 0);
-    std::clog << "Calculating the pseudo-exact solution.\n";
-    for (int i = 0; i < maxSteps; ++i) {
-        boris.step(minDt);
-    }
-    const double refZ = boris.pos().z;
-    std::clog << std::setprecision(20) <<  refZ << std::endl;
+        // Calculate the pseudo solution
+        boris.setElectronInfo(r, 0, zInit, 0, 0, 0);
+        std::clog << "Calculating the pseudo-exact solution.\n";
+        for (int i = 0; i < maxSteps; ++i) {
+            boris.step(minDt);
+        }
+        const double refZ = boris.pos().z;
+        std::clog << std::setprecision(20) <<  refZ << std::endl;
     */
+#ifdef VERY_RELATIVISTIC
+    const double refZ =  0.0083568139228484463604; // for 1 MV / 10 cm
+#else
     const double refZ = -0.0030687973670488798497; // for 100 kV / 10 cm
+#endif
 
     const double totalEnergy = Q0*ef->pot(zInit, 0);
 
