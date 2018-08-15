@@ -3,44 +3,12 @@
 #include <iomanip>
 
 
-#ifdef DEMO
-static void demoBoris(BorisPusher &boris)
-{
-    const double zInit = -10e-2;
-    double every = 1;
-    for (double dt = 1e-13; dt > 1e-16; dt *= 0.5) {
-        boris.setElectronInfo(1, 0, zInit, 0, 0, 0);
-        double counter = 0;
-        int64_t i = 0;
-        while(true) {
-            ++i;
-            boris.step(dt);
-            const auto p = boris.pos();
-            if (++counter == every) {
-                std::cout << i*dt << ' ' << p.z << '\n';
-                counter = 0;
-            }
-            if (p.z > 0) {
-                break;
-            }
-        }
-        std::cout << '\n';
-        every += every;
-
-    }
-}
-#endif
-
-
 int main()
 {
-    const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto ef = std::make_shared<ConstEzField>(-10e3/10e-2);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto boris = BorisPusher(ef, mf);
 
-#ifdef DEMO
-    demoBoris(boris);
-#else
     auto aphi = APhiPusher(ef, mf);
 
     const double zInit = -10e-2;
@@ -58,7 +26,6 @@ int main()
     std::clog << std::setprecision(20) <<  refZ << std::endl;
     */
     const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
-//    const double refZ = 0.087713137568685900503; // for 1MV / 10cm
 
     const double totalEnergy = Q0*ef->pot(zInit, 0);
 
@@ -85,6 +52,5 @@ int main()
         dt *= 2;
         steps /= 2;
     }
-#endif
     return 0;
 }

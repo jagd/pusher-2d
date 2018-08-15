@@ -11,7 +11,7 @@ int main()
     const double omega = v/rLarmor;
 
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(B);
+    const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = APhiPusher(ef, mf);
 
     const double distance = v*1e-12 * 1000;

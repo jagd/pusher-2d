@@ -1,15 +1,15 @@
 #include <gtest/gtest.h>
 #include <pusher/magfield.h>
 
-TEST(HomogeneousMagField, Ctor) {
-    const auto m1 = HomogeneousMagField(0);
-    const auto m2 = HomogeneousMagField(1.0);
-    const auto m3 = HomogeneousMagField(-1.0);
+TEST(ConstBzField, Ctor) {
+    const auto m1 = ConstBzField(0);
+    const auto m2 = ConstBzField(1.0);
+    const auto m3 = ConstBzField(-1.0);
 }
 
-TEST(HomogeneousMagField, Validate) {
+TEST(ConstBzField, Validate) {
     const double b = 1.3;
-    const auto m = HomogeneousMagField(b);
+    const auto m = ConstBzField(b);
     const double r = 30;
     const double z = 100.0;
     ASSERT_DOUBLE_EQ(b, m.bz(z, r));

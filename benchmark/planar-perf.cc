@@ -12,7 +12,7 @@ int main()
     const double omega = v/rLarmor;
 
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(B);
+    const auto mf = std::make_shared<ConstBzField>(B);
 
     const double offset = 2*rLarmor;
     const int64_t steps = 20000000;

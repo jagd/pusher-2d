@@ -2,16 +2,16 @@
 #include <pusher/pusher.h>
 #include <memory>
 
-TEST(APhi, Ctor) {
+TEST(APhiPusher, Ctor) {
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     APhiPusher(ef, mf);
 }
 
 
-TEST(APhi, ZeroFieldsWithoutMotion) {
+TEST(APhiPusher, ZeroFieldsWithoutMotion) {
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
     pusher.setElectronInfo(0,1,0,0,pusher.pTheta(0, 1, 0));
     for (int i = 0; i < 10; ++i) {
@@ -23,9 +23,9 @@ TEST(APhi, ZeroFieldsWithoutMotion) {
 }
 
 
-TEST(APhi, ZeroFieldsWithMotion) {
+TEST(APhiPusher, ZeroFieldsWithMotion) {
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
     const double dt = 1e-6;
 
@@ -39,13 +39,13 @@ TEST(APhi, ZeroFieldsWithMotion) {
 }
 
 
-TEST(APhi, PlainLargeOrbit) {
+TEST(APhiPusher, PlainLargeOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double r = -M0/Q0/B * u;
 
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(B);
+    const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = APhiPusher(ef, mf);
 
     const double dt = 1e-13;
@@ -59,7 +59,7 @@ TEST(APhi, PlainLargeOrbit) {
 }
 
 
-TEST(APhi, PlainSmallOrbit) {
+TEST(APhiPusher, PlainSmallOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double rLarmor = -M0/Q0/B * u;
@@ -68,12 +68,16 @@ TEST(APhi, PlainSmallOrbit) {
     const double omega = v/rLarmor;
 
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(B);
+    const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = APhiPusher(ef, mf);
 
     const double offset = 2*rLarmor;
     const double dt = 1e-13;
-    pusher.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*0.5)), 0, 0, pusher.pTheta(0, offset+rLarmor, u));
+    pusher.setElectronInfo(
+        0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*0.5)),
+        0, 0,
+        pusher.pTheta(0, offset+rLarmor, u)
+    );
     for (int i = 0; i < 10; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
@@ -83,9 +87,9 @@ TEST(APhi, PlainSmallOrbit) {
 }
 
 
-TEST(APhi, MirroredEzField) {
+TEST(APhiPusher, MirroredEzField) {
     const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
 
     const double zInit = -10e-2;
@@ -104,15 +108,19 @@ TEST(APhi, MirroredEzField) {
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
         const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
-        ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-12);
+        ASSERT_NEAR(
+            totalEnergy/Q0,
+            (potEnergy+kinEnergy)/Q0,
+            std::abs(totalEnergy/Q0)*1e-12
+        );
     }
     ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
 }
 
 
-TEST(APhi, ConstEzField) {
+TEST(APhiPusher, ConstEzField) {
     const auto ef = std::make_shared<ConstEzField>(-10e3/10e-2);
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
 
     const double zInit = -10e-2;
@@ -131,7 +139,11 @@ TEST(APhi, ConstEzField) {
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
         const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
-        ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-12);
+        ASSERT_NEAR(
+            totalEnergy/Q0,
+            (potEnergy+kinEnergy)/Q0,
+            std::abs(totalEnergy/Q0)*1e-12
+        );
     }
     ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
 }

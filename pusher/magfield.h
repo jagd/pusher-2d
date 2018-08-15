@@ -15,10 +15,10 @@ public:
 
 
 /// A zero field can be created if ctor(0)
-class HomogeneousMagField : public IStaticMagField
+class ConstBzField : public IStaticMagField
 {
 public:
-    HomogeneousMagField(double bz): bz_(bz) {}
+    ConstBzField(double bz): bz_(bz) {}
     virtual double aTheta(double z, double r) const override;
     virtual double aTheta2z(double z, double r) const override;
     virtual double aTheta2r(double z, double r) const override;

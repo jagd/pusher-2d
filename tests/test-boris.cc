@@ -4,16 +4,16 @@
 #include <pusher/pusher.h>
 #include <memory>
 
-TEST(Boris, Ctor) {
+TEST(BorisPusher, Ctor) {
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     BorisPusher(ef, mf);
 }
 
 
-TEST(Boris, ZeroFieldsWithoutMotion) {
+TEST(BorisPusher, ZeroFieldsWithoutMotion) {
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = BorisPusher(ef, mf);
     pusher.setElectronInfo(0,0,0,0,0,0);
     for (int i = 0; i < 10; ++i) {
@@ -34,9 +34,9 @@ TEST(Boris, ZeroFieldsWithoutMotion) {
 }
 
 
-TEST(Boris, ZeroFieldsWithMotion) {
+TEST(BorisPusher, ZeroFieldsWithMotion) {
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = BorisPusher(ef, mf);
     const double dt = 1e-6;
 
@@ -60,7 +60,7 @@ TEST(Boris, ZeroFieldsWithMotion) {
 }
 
 
-TEST(Boris, PlainLargeOrbit) {
+TEST(BorisPusher, PlainLargeOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double r = -M0/Q0/B * u;
@@ -69,7 +69,7 @@ TEST(Boris, PlainLargeOrbit) {
     const double omega = v/r;
 
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(B);
+    const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = BorisPusher(ef, mf);
 
     const double dt = 1e-13;
@@ -83,7 +83,7 @@ TEST(Boris, PlainLargeOrbit) {
 }
 
 
-TEST(Boris, PlainSmallOrbit) {
+TEST(BorisPusher, PlainSmallOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double rLarmor = -M0/Q0/B * u; // ~ 0.5 mm
@@ -92,7 +92,7 @@ TEST(Boris, PlainSmallOrbit) {
     const double omega = v/rLarmor;
 
     const auto ef = std::make_shared<ZeroEField>();
-    const auto mf = std::make_shared<HomogeneousMagField>(B);
+    const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = BorisPusher(ef, mf);
 
     const double dt = 1e-13;
@@ -108,9 +108,9 @@ TEST(Boris, PlainSmallOrbit) {
 }
 
 
-TEST(Boris, MirroredEzField) {
+TEST(BorisPusher, MirroredEzField) {
     const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = BorisPusher(ef, mf);
 
     const double zInit = -10e-2;
@@ -135,9 +135,9 @@ TEST(Boris, MirroredEzField) {
 }
 
 
-TEST(Boris, ConstEzField) {
+TEST(BorisPusher, ConstEzField) {
     const auto ef = std::make_shared<ConstEzField>(-10e3/10e-2);
-    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = BorisPusher(ef, mf);
 
     const double zInit = -10e-2;
