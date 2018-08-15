@@ -42,6 +42,11 @@ add_executable(planar-perf-aphi planar-perf.cc)
 target_compile_definitions(planar-perf-aphi PRIVATE APHI_ONLY)
 target_link_libraries(planar-perf-aphi aphi-pusher)
 
+
+# Constant Ez
+add_executable(const-ez const-ez.cc)
+target_link_libraries(const-ez aphi-pusher)
+
 # Linear oscillator
 add_executable(linear-oscillator-demo linear-oscillator.cc)
 target_compile_definitions(linear-oscillator-demo PRIVATE DEMO)

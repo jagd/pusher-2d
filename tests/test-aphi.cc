@@ -83,12 +83,13 @@ TEST(APhi, PlainSmallOrbit) {
 }
 
 
-TEST(APhi, OnlyMirOscZEField) {
-    const auto ef = std::make_shared<MirOscZEField>(10e3/10e-2);
+TEST(APhi, MirroredEzField) {
+    const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
     const auto mf = std::make_shared<HomogeneousMagField>(0);
     auto pusher = APhiPusher(ef, mf);
 
-    const double totalEnergy = Q0*ef->pot(10e-2, 0);
+    const double zInit = -10e-2;
+    const double totalEnergy = Q0*ef->pot(zInit, 0);
     const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
     const int pseudoOrder = 30;
     int64_t maxSteps = static_cast<int64_t>(1) << pseudoOrder;
@@ -97,7 +98,34 @@ TEST(APhi, OnlyMirOscZEField) {
     const int orderOffset = 15;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
-    pusher.setElectronInfo(-10e-2, r, 0, 0, pusher.pTheta(-10e-2, r, 0));
+    pusher.setElectronInfo(zInit, r, 0, 0, pusher.pTheta(zInit, r, 0));
+    for (int i = 0; i < steps; ++i) {
+        pusher.step(dt);
+        const auto p = pusher.pos();
+        const double potEnergy = Q0*ef->pot(p.z, 0);
+        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-12);
+    }
+    ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
+}
+
+
+TEST(APhi, ConstEzField) {
+    const auto ef = std::make_shared<ConstEzField>(-10e3/10e-2);
+    const auto mf = std::make_shared<HomogeneousMagField>(0);
+    auto pusher = APhiPusher(ef, mf);
+
+    const double zInit = -10e-2;
+    const double totalEnergy = Q0*ef->pot(zInit, 0);
+    const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
+    const int pseudoOrder = 30;
+    int64_t maxSteps = static_cast<int64_t>(1) << pseudoOrder;
+    const double minDt = 1e-18;
+    const double r = 1e-2;
+    const int orderOffset = 15;
+    int64_t steps = maxSteps >> orderOffset;
+    double dt = minDt*(1 << orderOffset);
+    pusher.setElectronInfo(zInit, r, 0, 0, pusher.pTheta(zInit, r, 0));
     for (int i = 0; i < steps; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();

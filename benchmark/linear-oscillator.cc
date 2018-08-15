@@ -6,9 +6,10 @@
 #ifdef DEMO
 static void demoBoris(BorisPusher &boris)
 {
+    const double zInit = -10e-2;
     double every = 1;
     for (double dt = 1e-13; dt > 1e-16; dt *= 0.5) {
-        boris.setElectronInfo(1, 0, -10e-2, 0, 0, 0);
+        boris.setElectronInfo(1, 0, zInit, 0, 0, 0);
         double counter = 0;
         int64_t i = 0;
         while(true) {
@@ -33,7 +34,7 @@ static void demoBoris(BorisPusher &boris)
 
 int main()
 {
-    const auto ef = std::make_shared<MirOscZEField>(10e3/10e-2);
+    const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
     const auto mf = std::make_shared<HomogeneousMagField>(0);
     auto boris = BorisPusher(ef, mf);
 
@@ -42,12 +43,13 @@ int main()
 #else
     auto aphi = APhiPusher(ef, mf);
 
+    const double zInit = -10e-2;
     const int pseudoOrder = 30;
     int64_t maxSteps = static_cast<int64_t>(1) << pseudoOrder;
     const double minDt = 1e-18;
     const double r = 1e-2;
     /*
-    boris.setElectronInfo(r, 0, -10e-2, 0, 0, 0);
+    boris.setElectronInfo(r, 0, zInit, 0, 0, 0);
     std::clog << "Calculating the pseudo-exact solution.\n";
     for (int i = 0; i < maxSteps; ++i) {
         boris.step(minDt);
@@ -58,14 +60,14 @@ int main()
     const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
 //    const double refZ = 0.087713137568685900503; // for 1MV / 10cm
 
-    const double totalEnergy = Q0*ef->pot(10e-2, 0);
+    const double totalEnergy = Q0*ef->pot(zInit, 0);
 
     const int orderOffset = 8;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
     for (int c = pseudoOrder-orderOffset; c >=0 ; --c) {
-        boris.setElectronInfo(r, 0, -10e-2, 0, 0, 0);
-        aphi.setElectronInfo(-10e-2, r, 0, 0, aphi.pTheta(-10e-2, r, 0));
+        boris.setElectronInfo(r, 0, zInit, 0, 0, 0);
+        aphi.setElectronInfo(zInit, r, 0, 0, aphi.pTheta(zInit, r, 0));
         std::clog << "dt = " << dt << '\n';
         for (int i = 0; i < steps; ++i) {
             aphi.step(dt);

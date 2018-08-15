@@ -13,24 +13,43 @@ IStaticEField::~IStaticEField()
 }
 
 
-MirOscZEField::MirOscZEField(double ez): ez_(ez)
+MirroredEzField::MirroredEzField(double ez): ez_(ez)
 {
 }
 
 
-double MirOscZEField::pot(double z, double) const
+double MirroredEzField::pot(double z, double) const
 {
     return -ez_ * std::abs(z);
 }
 
 
-double MirOscZEField::ez(double z, double) const
+double MirroredEzField::ez(double z, double) const
 {
     return (z >= 0) ? ez_ : -ez_;
 }
 
 
-double MirOscZEField::er(double, double) const
+double MirroredEzField::er(double, double) const
+{
+    return 0;
+}
+
+ConstEzField::ConstEzField(double ez): ez_(ez)
+{
+}
+
+double ConstEzField::pot(double z, double) const
+{
+    return -z*ez_;
+}
+
+double ConstEzField::ez(double, double) const
+{
+    return ez_;
+}
+
+double ConstEzField::er(double, double) const
 {
     return 0;
 }
