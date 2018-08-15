@@ -58,6 +58,7 @@ int main()
     const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
 //    const double refZ = 0.087713137568685900503; // for 1MV / 10cm
 
+    const double totalEnergy = Q0*ef->pot(10e-2, 0);
 
     const int orderOffset = 8;
     int64_t steps = maxSteps >> orderOffset;
@@ -72,7 +73,13 @@ int main()
         }
         const auto pBoris = boris.pos();
         const auto pAPhi = aphi.pos();
-        std::cout << dt << ' ' << (pBoris.z - refZ)/refZ << ' ' << (pAPhi.z - refZ)/refZ << '\n';
+        const double potEnergyBoris = Q0*ef->pot(pBoris.z, 0);
+        const double kinEnergyBoris = (boris.gamma()-1.0)*(M0*C0*C0);
+        std::cout << std::setprecision(18)
+                  << dt << ' '
+                  << (pBoris.z - refZ)/refZ << ' '
+                  << (pAPhi.z - refZ)/refZ  << ' '
+                  << std::abs(potEnergyBoris + kinEnergyBoris - totalEnergy) / std::abs(totalEnergy) << '\n';
         dt *= 2;
         steps /= 2;
     }
