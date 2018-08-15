@@ -88,15 +88,22 @@ TEST(APhi, OnlyMirOscZEField) {
     const auto mf = std::make_shared<HomogeneousMagField>(0);
     auto pusher = APhiPusher(ef, mf);
 
-    const double dt = 1e-13;
-    const double  r = 1e-2;
-    pusher.setElectronInfo(10e-2, r, 0, 0, pusher.pTheta(10e-2, r, 0));
-    const double totalEnergy = ef->pot(10e-2, 0);
-    for (int i = 0; i < 100; ++i) {
+    const double totalEnergy = Q0*ef->pot(10e-2, 0);
+    const double refZ = -0.089871131212472837868; // for 10 kV / 10 cm
+    const int pseudoOrder = 30;
+    int64_t maxSteps = static_cast<int64_t>(1) << pseudoOrder;
+    const double minDt = 1e-18;
+    const double r = 1e-2;
+    const int orderOffset = 15;
+    int64_t steps = maxSteps >> orderOffset;
+    double dt = minDt*(1 << orderOffset);
+    pusher.setElectronInfo(-10e-2, r, 0, 0, pusher.pTheta(-10e-2, r, 0));
+    for (int i = 0; i < steps; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
-        const double potEnergy = ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0/Q0);
-        ASSERT_NEAR(totalEnergy, potEnergy+kinEnergy, std::abs(totalEnergy)*1e-12);
+        const double potEnergy = Q0*ef->pot(p.z, 0);
+        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-12);
     }
+    ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
 }
