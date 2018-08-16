@@ -3,6 +3,11 @@
 #include <cmath>
 #include <cassert>
 
+double gamma2v(double g)
+{
+    return C0 * std::sqrt(1-1/(g*g));
+}
+
 double v2gamma(double v)
 {
     return 1.0/(std::sqrt(1.0-v*v/(C0*C0)));

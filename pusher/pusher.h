@@ -75,5 +75,6 @@ private:
 double v2gamma(double v);
 double u2gamma(double u);
 double v2u(double v);
+double gamma2v(double gamma);
 
 #endif // PUSHER_H

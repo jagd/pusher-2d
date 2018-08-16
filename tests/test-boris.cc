@@ -4,6 +4,14 @@
 #include <pusher/pusher.h>
 #include <memory>
 
+
+TEST(Aux, V2gammaGamma2v) {
+    for (double g = 1.0; g < 2; g += 0.1) {
+        ASSERT_NEAR(g, v2gamma(gamma2v(g)), g*1e-12);
+    }
+}
+
+
 TEST(BorisPusher, Ctor) {
     const auto ef = std::make_shared<ZeroEField>();
     const auto mf = std::make_shared<ConstBzField>(0);
