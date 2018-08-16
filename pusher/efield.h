@@ -35,6 +35,19 @@ private:
 };
 
 
+class ConstErField: public IStaticEField
+{
+public:
+    ConstErField(double er);
+    virtual ~ConstErField() override = default;
+    virtual double pot(double, double) const override;
+    virtual double ez(double, double) const override;
+    virtual double er(double, double) const override;
+private:
+    const double er_;
+};
+
+
 /// a mirrored symmetric field, which has inifnite length.
 /// z=0 is the symmetric plane. Field strength Ez at z>=0,
 /// otherwise -Ez.

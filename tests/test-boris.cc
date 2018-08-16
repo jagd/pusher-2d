@@ -160,3 +160,31 @@ TEST(BorisPusher, ConstEzField) {
     }
     ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
 }
+
+
+TEST(BorisPusher, ConstErField) {
+    const auto ef = std::make_shared<ConstErField>(-10e3/10e-2);
+    const auto mf = std::make_shared<ConstBzField>(0);
+    auto pusher = BorisPusher(ef, mf);
+
+    const double rInit = 10e-2;
+    const double totalEnergy = Q0*ef->pot(0, rInit);
+    const double refR = rInit+0.010128868787527162132; // for 10 kV / 10 cm
+    const int pseudoOrder = 30;
+    int64_t maxSteps = static_cast<int64_t>(1) << pseudoOrder;
+    const double minDt = 1e-18;
+    const int orderOffset = 15;
+    int64_t steps = maxSteps >> orderOffset;
+    double dt = minDt*(1 << orderOffset);
+    pusher.setElectronInfo(rInit, 0, 0, 0, 0, 0);
+    for (int i = 0; i < steps; ++i) {
+        pusher.step(dt);
+        const auto p = pusher.pos();
+        const double r = std::sqrt(p.x*p.x + p.y*p.y);
+        const double potEnergy = Q0*ef->pot(0, r);
+        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-5);
+    }
+    const auto p = pusher.pos();
+    ASSERT_NEAR(refR, std::sqrt(p.x*p.x + p.y*p.y), std::abs(refR*1e-5));
+}

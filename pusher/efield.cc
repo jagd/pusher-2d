@@ -1,6 +1,7 @@
 #include "efield.h"
 #include <limits>
 #include <cmath>
+#include <cassert>
 
 double IStaticEField::pot(double, double) const
 {
@@ -52,4 +53,24 @@ double ConstEzField::ez(double, double) const
 double ConstEzField::er(double, double) const
 {
     return 0;
+}
+
+ConstErField::ConstErField(double er) : er_(er)
+{
+}
+
+double ConstErField::pot(double, double r) const
+{
+    assert(r >= 0);
+    return -r*er_;
+}
+
+double ConstErField::ez(double, double) const
+{
+    return 0;
+}
+
+double ConstErField::er(double, double) const
+{
+    return er_;
 }
