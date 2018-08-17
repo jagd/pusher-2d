@@ -20,7 +20,7 @@ int main()
     for (double dt = 1e-11; dt > 1e-16; dt *= 0.8) {
         const int64_t steps = std::ceil(distance / (v*dt));
         std::clog << "steps: " << steps << " ; 3D step width: " << dt*v << '\n';
-        pusher.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*0.5)), 0, 0, pusher.pTheta(0, offset+rLarmor, u));
+        pusher.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*0.5)), 0, 0, pusher.pTheta(0, offset+rLarmor, u), gamma);
 #ifdef DEMO
         int64_t trigger = static_cast<int64_t>(6.0/omega/dt);
         for (int64_t i = 0; i < steps; ++i) {

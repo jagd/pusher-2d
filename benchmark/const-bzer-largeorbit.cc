@@ -31,7 +31,7 @@ int main()
         const int64_t steps = static_cast<int64_t>(std::ceil(distance / (v*dt)));
         const double startAngle = std::atan(dt * omega/2);
         boris.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle),0, 0, u, 0);
-        aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u));
+        aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u), gamma);
         double trigger = 0;
         std::clog << "dt = " << dt << '\n';
         for (int i = 1; i <= steps; ++i) {
@@ -45,7 +45,7 @@ int main()
                 const double kinEnergyBoris = (boris.gamma()-1.0)*(M0*C0*C0);
                 std::cout << std::setprecision(18)
                           // Col 1: time
-                          << i*dt << ' '
+                          << i*dt*omega/(2*M_PI) << ' '
                           // Col 2-3: Radius of both methods
                           <<  std::sqrt(pBoris.x*pBoris.x + pBoris.y*pBoris.y) << ' '
                           <<  pAPhi.r << ' '
