@@ -39,7 +39,7 @@ static void demoAPhi(APhiPusher &aphi, double zInit)
 {
     double every = 1;
     for (double dt = 1e-12; dt > 1e-16; dt *= 0.5) {
-        aphi.setElectronInfo(zInit, 1, 0, 0, aphi.pTheta(zInit, 1, 0));
+        aphi.setElectronInfo(zInit, 1, 0, 0, aphi.pTheta(zInit, 1, 0), 1.0);
         double counter = 0;
         int iter = 0;
         int64_t i = 0;
@@ -113,7 +113,7 @@ int main()
     double dt = minDt*(1 << orderOffset);
     for (int c = pseudoOrder-orderOffset; c >=0 ; --c) {
         boris.setElectronInfo(r, 0, zInit, 0, 0, 0);
-        aphi.setElectronInfo(zInit, r, 0, 0, aphi.pTheta(zInit, r, 0));
+        aphi.setElectronInfo(zInit, r, 0, 0, aphi.pTheta(zInit, r, 0), 1.0);
         std::clog << "dt = " << dt << '\n';
         for (int i = 0; i < steps; ++i) {
             aphi.step(dt);

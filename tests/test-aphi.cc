@@ -13,7 +13,7 @@ TEST(APhiPusher, ZeroFieldsWithoutMotion) {
     const auto ef = std::make_shared<ZeroEField>();
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
-    pusher.setElectronInfo(0,1,0,0,pusher.pTheta(0, 1, 0));
+    pusher.setElectronInfo(0,1,0,0,pusher.pTheta(0, 1, 0), 1.0);
     for (int i = 0; i < 10; ++i) {
         pusher.step(1e-6);
         const auto p = pusher.pos();
@@ -29,7 +29,7 @@ TEST(APhiPusher, ZeroFieldsWithMotion) {
     auto pusher = APhiPusher(ef, mf);
     const double dt = 1e-6;
 
-    pusher.setElectronInfo(0,1,1.0,0,pusher.pTheta(0, 1, 0));
+    pusher.setElectronInfo(0,1,1.0,0,pusher.pTheta(0, 1, 0), 1/std::sqrt(1-1/C0/C0));
     for (int i = 0; i < 10; ++i) {
         pusher.step(1e-6);
         const auto p = pusher.pos();
@@ -49,7 +49,7 @@ TEST(APhiPusher, PlainLargeOrbit) {
     auto pusher = APhiPusher(ef, mf);
 
     const double dt = 1e-13;
-    pusher.setElectronInfo(0, r, 0, 0, pusher.pTheta(0, r, u));
+    pusher.setElectronInfo(0, r, 0, 0, pusher.pTheta(0, r, u), std::sqrt(1+u*u/C0/C0));
     for (int i = 0; i < 10; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
@@ -76,7 +76,8 @@ TEST(APhiPusher, PlainSmallOrbit) {
     pusher.setElectronInfo(
         0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*0.5)),
         0, 0,
-        pusher.pTheta(0, offset+rLarmor, u)
+        pusher.pTheta(0, offset+rLarmor, u),
+        std::sqrt(1+u*u/C0/C0)
     );
     for (int i = 0; i < 10; ++i) {
         pusher.step(dt);
@@ -102,7 +103,7 @@ TEST(APhiPusher, MirroredEzField) {
     const int orderOffset = 15;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
-    pusher.setElectronInfo(zInit, r, 0, 0, pusher.pTheta(zInit, r, 0));
+    pusher.setElectronInfo(zInit, r, 0, 0, pusher.pTheta(zInit, r, 0), 1.0);
     for (int i = 0; i < steps; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
@@ -133,7 +134,7 @@ TEST(APhiPusher, ConstEzField) {
     const int orderOffset = 15;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
-    pusher.setElectronInfo(zInit, r, 0, 0, pusher.pTheta(zInit, r, 0));
+    pusher.setElectronInfo(zInit, r, 0, 0, pusher.pTheta(zInit, r, 0), 1.0);
     for (int i = 0; i < steps; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();
@@ -163,7 +164,7 @@ TEST(APhiPusher, ConstErField) {
     const int orderOffset = 15;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
-    pusher.setElectronInfo(0, rInit, 0, 0, pusher.pTheta(0, rInit, 0));
+    pusher.setElectronInfo(0, rInit, 0, 0, pusher.pTheta(0, rInit, 0), 1.0);
     for (int i = 0; i < steps; ++i) {
         pusher.step(dt);
         const auto p = pusher.pos();

@@ -58,16 +58,16 @@ public:
     void step(double dt) override;
     void setElectronInfo(
         double z, double r,
-        double uzLastHalf, double urLastHalf,
+        double vzLastHalf, double vrLastHalf,
         double pTheta,
-        double gamma = 0
+        double gamma
     );
     PV2D pos() const;
-    PV2D u() const;
+    PV2D v() const;
     double gamma() const;
 private:
     PV2D pos_;
-    PV2D uLastHalf_;
+    PV2D vLastHalf_;
     double pTheta_;
     double totalEnergy_; //! in Volt*Q, where Q is signed
 };

@@ -21,7 +21,7 @@ int main()
 
 #ifndef BORIS_ONLY
     auto aphi = APhiPusher(ef, mf);
-    aphi.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle)), 0, 0, aphi.pTheta(0, offset+rLarmor, u));
+    aphi.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle)), 0, 0, aphi.pTheta(0, offset+rLarmor, u), std::sqrt(1+u*u/C0/C0));
     const auto aphiBegin = std::chrono::steady_clock::now();
     for (int64_t i = 0; i < steps; ++i) {
         aphi.step(dt);
