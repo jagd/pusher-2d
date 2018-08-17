@@ -24,10 +24,10 @@ int main()
         pusher.setElectronInfo(offset+rLarmor*std::cos(startAngle), rLarmor*std::sin(startAngle),0, 0, u, 0);
 #ifdef DEMO
         int64_t trigger = static_cast<int64_t>(6.0/omega/dt);
-        for (int64_t i = 0; i < steps; ++i) {
+        for (int64_t i = 1; i <= steps; ++i) {
             if (trigger*omega*dt > 0.1745) { // every ~10 degree
                 const auto p = pusher.pos();
-                std::cout << omega*dt*i << ' ' << std::sqrt(p.x*p.x+p.y*p.y) << '\n';
+                std::cout << omega*dt*i/(2*M_PI) << ' ' << std::sqrt(p.x*p.x+p.y*p.y) << '\n';
                 trigger = 0;
             }
             pusher.step(dt);

@@ -22,12 +22,12 @@ int main()
         pusher.setElectronInfo(0, r, 0, 0, pusher.pTheta(0, r, u), gamma);
 #ifdef DEMO
         int64_t trigger = 0;
-        for (int64_t i = 0; i < steps; ++i) {
+        for (int64_t i = 1; i <= steps; ++i) {
             pusher.step(dt);
             ++trigger;
             if (trigger*omega*dt > 0.1745) { // every ~10 degree
                 const auto p = pusher.pos();
-                std::cout << omega*dt*i << ' ' <<  (p.r-r)/r << '\n';
+                std::cout << omega*dt*i/(2*M_PI) << ' ' <<  (p.r-r)/r << '\n';
                 trigger = 0;
             }
         }
