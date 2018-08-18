@@ -7,19 +7,12 @@ add_executable(planar-largeorbit planar-largeorbit.cc)
 target_link_libraries(planar-largeorbit aphi-pusher)
 
 # Planar small orbit
-add_executable(planar-smallorbit-aphi-demo planar-smallorbit-aphi.cc)
-target_compile_definitions(planar-smallorbit-aphi-demo PRIVATE DEMO)
-target_link_libraries(planar-smallorbit-aphi-demo aphi-pusher)
+add_executable(planar-smallorbit-demo planar-smallorbit.cc)
+target_compile_definitions(planar-smallorbit-demo PRIVATE DEMO)
+target_link_libraries(planar-smallorbit-demo aphi-pusher)
 
-add_executable(planar-smallorbit-aphi planar-smallorbit-aphi.cc)
-target_link_libraries(planar-smallorbit-aphi aphi-pusher)
-
-add_executable(planar-smallorbit-boris-demo planar-smallorbit-boris.cc)
-target_compile_definitions(planar-smallorbit-boris-demo PRIVATE DEMO)
-target_link_libraries(planar-smallorbit-boris-demo aphi-pusher)
-
-add_executable(planar-smallorbit-boris planar-smallorbit-boris.cc)
-target_link_libraries(planar-smallorbit-boris aphi-pusher)
+add_executable(planar-smallorbit planar-smallorbit.cc)
+target_link_libraries(planar-smallorbit aphi-pusher)
 
 add_executable(planar-smallorbit-perioderror-demo planar-smallorbit-perioderror.cc)
 target_link_libraries(planar-smallorbit-perioderror-demo aphi-pusher)
