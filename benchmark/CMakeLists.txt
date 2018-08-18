@@ -29,6 +29,8 @@ target_link_libraries(planar-smallorbit-boris-demo aphi-pusher)
 add_executable(planar-smallorbit-boris planar-smallorbit-boris.cc)
 target_link_libraries(planar-smallorbit-boris aphi-pusher)
 
+add_executable(planar-smallorbit-perioderror-demo planar-smallorbit-perioderror.cc)
+target_link_libraries(planar-smallorbit-perioderror-demo aphi-pusher)
 
 # Performance measurement based on small orbit benchmarks
 add_executable(planar-perf planar-perf.cc)
