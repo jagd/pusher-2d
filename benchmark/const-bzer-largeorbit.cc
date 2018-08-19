@@ -33,7 +33,7 @@ int main()
         boris.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle),0, 0, u, 0);
         aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u), gamma);
         double trigger = 0;
-        std::clog << "dt = " << dt << '\n';
+        std::clog << "omega*dt = " << omega*dt << '\n';
         for (int i = 1; i <= steps; ++i) {
             aphi.step(dt);
             boris.step(dt);
@@ -47,10 +47,10 @@ int main()
                           // Col 1: time
                           << i*dt*omega/(2*M_PI) << ' '
                           // Col 2-3: Radius of both methods
-                          <<  std::sqrt(pBoris.x*pBoris.x + pBoris.y*pBoris.y) << ' '
-                          <<  pAPhi.r << ' '
+                          << fromPV3D(pBoris).r << ' '
+                          << pAPhi.r << ' '
                           // Col 4-5: Relative error of radius
-                          << (std::sqrt(pBoris.x*pBoris.x + pBoris.y*pBoris.y) - r)/r << ' '
+                          << (fromPV3D(pBoris).r - r)/r << ' '
                           << (pAPhi.r - r)/r  << ' '
                           // Col 6: Error of energy
                           << potEnergyBoris + kinEnergyBoris - totalEnergy / totalEnergy << '\n';
