@@ -41,7 +41,7 @@ int main()
             if (trigger*omega*dt > 0.1745) { // every ~10 degree
                 const auto pBoris = boris.pos();
                 const auto pAPhi = aphi.pos();
-                const double potEnergyBoris = Q0*ef->pot(pBoris.z, 0);
+                const double potEnergyBoris = Q0*ef->pot(pBoris.z, fromPV3D(pBoris).r);
                 const double kinEnergyBoris = (boris.gamma()-1.0)*(M0*C0*C0);
                 std::cout << std::setprecision(18)
                           // Col 1: time
@@ -52,8 +52,8 @@ int main()
                           // Col 4-5: Relative error of radius
                           << (fromPV3D(pBoris).r - r)/r << ' '
                           << (pAPhi.r - r)/r  << ' '
-                          // Col 6: Error of energy
-                          << potEnergyBoris + kinEnergyBoris - totalEnergy / totalEnergy << '\n';
+                          // Col 6: Error of energy in Boris (APhi pusher preserves energy)
+                          << (potEnergyBoris + kinEnergyBoris - totalEnergy) / totalEnergy << '\n';
                 trigger = 0;
             }
         }
