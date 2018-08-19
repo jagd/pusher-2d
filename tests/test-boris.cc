@@ -196,3 +196,37 @@ TEST(BorisPusher, ConstErField) {
     const auto p = pusher.pos();
     ASSERT_NEAR(refR, std::sqrt(p.x*p.x + p.y*p.y), std::abs(refR*1e-5));
 }
+
+
+TEST(BorisPusher, ConstBzErField) {
+    const double Bz = 1.0;
+    const double Er = -10e3 / 10e-2;
+    const double gamma = 1.2;
+    const double r = 0.001131326056780128; // Mathematica
+    const double v = gamma2v(gamma);
+    const double omega = v/r;
+    const double u = v*gamma;
+
+    const auto ef = std::make_shared<ConstErField>(Er);
+    const auto mf = std::make_shared<ConstBzField>(Bz);
+    auto boris = BorisPusher(ef, mf);
+
+    const double totalEnergy = Q0*ef->pot(0, r) + (gamma-1)*(M0*C0*C0);
+
+    const double dt = 1e-15;
+    const int64_t steps = M_PI/(omega*dt);
+    const double startAngle = std::atan(dt * omega/2);
+    boris.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle),0, 0, u, 0);
+    for (int i = 1; i <= steps; ++i) {
+        boris.step(dt);
+    }
+    const auto pBoris = boris.pos();
+    const double potEnergyBoris = Q0*ef->pot(pBoris.z, fromPV3D(pBoris).r);
+    const double kinEnergyBoris = (boris.gamma()-1.0)*(M0*C0*C0);
+    ASSERT_NEAR(r, fromPV3D(pBoris).r, r*1e-8);
+    ASSERT_NEAR(
+        totalEnergy/Q0,
+        (potEnergyBoris + kinEnergyBoris)/Q0,
+        std::abs(totalEnergy/Q0*1e-8)
+    );
+}
