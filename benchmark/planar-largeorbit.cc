@@ -1,5 +1,6 @@
 #include <pusher/pusher.h>
 #include <iostream>
+#include <algorithm>
 
 int main()
 {
@@ -22,7 +23,7 @@ int main()
 #endif
 
     for (double dt = 1e-12; dt > 1e-16; dt *= 0.5) {
-        const int64_t steps = std::ceil(10*2*M_PI / (omega*dt));
+        const int64_t steps = static_cast<int64_t>(std::ceil(10*2*M_PI / (omega*dt)));
         std::clog << "omega*dt: " << omega*dt << '\n';
         const double startAngle = std::atan(dt * omega/2);
         aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u), gamma);
