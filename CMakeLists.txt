@@ -4,6 +4,10 @@ project(aphi-pusher)
 include(cmake/compiler.cmake)
 include_directories("${CMAKE_SOURCE_DIR}")
 
+# For the case that windows does not have rel path of libs
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 option(BUILD_TEST "Build Tests" ON)
 if (BUILD_TEST)
 option(SYSTEM_GTEST "use system-wide gtest" ON)
