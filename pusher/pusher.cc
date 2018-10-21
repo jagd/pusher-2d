@@ -1,5 +1,6 @@
 #include "pusher.h"
 #include "pv.h"
+#include <limits>
 #include <cmath>
 #include <cassert>
 
@@ -46,6 +47,7 @@ void BorisPusher::setElectronInfo(
 {
     pos_ = PV3D(x, y, z);
     uLastHalf_ = PV3D(ux, uy, uz);
+	gammaAtPos_ = std::numeric_limits<double>::quiet_NaN();
 }
 
 
