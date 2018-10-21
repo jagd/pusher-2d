@@ -55,7 +55,12 @@ add_executable(const-bzer-largeorbit-demo const-bzer-largeorbit.cc)
 target_compile_definitions(const-bzer-largeorbit-demo PRIVATE DEMO)
 target_link_libraries(const-bzer-largeorbit-demo aphi-pusher)
 
-# ConstBzEr
+# ConstBzEz
 add_executable(const-bzez-largeorbit-demo const-bzez-largeorbit.cc)
 target_compile_definitions(const-bzez-largeorbit-demo PRIVATE DEMO)
 target_link_libraries(const-bzez-largeorbit-demo aphi-pusher)
+
+# Non-adiabatic: zero mag field
+add_executable(nonadiabatic-cusp-demo nonadiabatic-cusp.cc)
+target_compile_definitions(nonadiabatic-cusp-demo PRIVATE DEMO)
+target_link_libraries(nonadiabatic-cusp-demo aphi-pusher)
