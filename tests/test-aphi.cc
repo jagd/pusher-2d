@@ -179,35 +179,49 @@ TEST(APhiPusher, ConstErField) {
     ASSERT_NEAR(refR, pusher.pos().r, std::abs(refR*1e-5));
 }
 
+static void auxConstBzEr(bool useDegradedLinearBzField = false)
+{
+	const double Bz = 1.0;
+	const double Er = -10e3 / 10e-2;
+	const double gamma = 1.2;
+	const double r = 0.001131326056780128; // Mathematica
+	const double v = gamma2v(gamma);
+	const double omega = v / r;
+	const double u = v * gamma;
 
-TEST(APhiPusher, ConstBzErField) {
-    const double Bz = 1.0;
-    const double Er = -10e3 / 10e-2;
-    const double gamma = 1.2;
-    const double r = 0.001131326056780128; // Mathematica
-    const double v = gamma2v(gamma);
-    const double omega = v/r;
-    const double u = v*gamma;
+	const auto ef = std::make_shared<ConstErField>(Er);
+    const auto mf = useDegradedLinearBzField ?
+		std::static_pointer_cast<IStaticMagField>(std::make_shared<LinearBzField>(Bz, 0)) :
+		std::static_pointer_cast<IStaticMagField>(std::make_shared<ConstBzField>(Bz));
+	auto aphi = APhiPusher(ef, mf);
 
-    const auto ef = std::make_shared<ConstErField>(Er);
-    const auto mf = std::make_shared<ConstBzField>(Bz);
-    auto aphi = APhiPusher(ef, mf);
+	const double totalEnergy = Q0 * ef->pot(0, r) + (gamma - 1)*(M0*C0*C0);
 
-    const double totalEnergy = Q0*ef->pot(0, r) + (gamma-1)*(M0*C0*C0);
+	const double dt = 1e-15;
+    const int64_t steps = static_cast<int>(M_PI/(omega*dt));
+	aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u), gamma);
+	for (int i = 1; i <= steps; ++i) {
+		aphi.step(dt);
+	}
+	const auto pAPhi = aphi.pos();
+	const double kinEnergyAPhi = (aphi.gamma() - 1.0)*(M0*C0*C0);
+	const double potEnergyAPhi = Q0 * ef->pot(pAPhi.z, pAPhi.r);
+	ASSERT_NEAR(r, pAPhi.r, r*1e-8);
+	ASSERT_NEAR(
+		totalEnergy / Q0,
+		(potEnergyAPhi + kinEnergyAPhi) / Q0,
+		std::abs(totalEnergy / Q0 * 1e-8)
+	);
+}
 
-    const double dt = 1e-15;
-    const int64_t steps = M_PI/(omega*dt);
-    aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u), gamma);
-    for (int i = 1; i <= steps; ++i) {
-        aphi.step(dt);
-    }
-    const auto pAPhi = aphi.pos();
-    const double kinEnergyAPhi = (aphi.gamma()-1.0)*(M0*C0*C0);
-    const double potEnergyAPhi = Q0*ef->pot(pAPhi.z, pAPhi.r);
-    ASSERT_NEAR(r, pAPhi.r, r*1e-8);
-    ASSERT_NEAR(
-        totalEnergy/Q0,
-        (potEnergyAPhi + kinEnergyAPhi)/Q0,
-        std::abs(totalEnergy/Q0*1e-8)
-    );
+
+TEST(APhiPusher, ConstBzErField)
+{
+	auxConstBzEr();
+}
+
+
+TEST(APhiPusher, LinearBzErField_k0)
+{
+	auxConstBzEr(true);
 }

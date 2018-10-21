@@ -198,7 +198,8 @@ TEST(BorisPusher, ConstErField) {
 }
 
 
-TEST(BorisPusher, ConstBzErField) {
+static void auxConstBzEr(bool useDegradedLinearBzField = false)
+{
     const double Bz = 1.0;
     const double Er = -10e3 / 10e-2;
     const double gamma = 1.2;
@@ -208,13 +209,15 @@ TEST(BorisPusher, ConstBzErField) {
     const double u = v*gamma;
 
     const auto ef = std::make_shared<ConstErField>(Er);
-    const auto mf = std::make_shared<ConstBzField>(Bz);
+    const auto mf = useDegradedLinearBzField ?
+		std::static_pointer_cast<IStaticMagField>(std::make_shared<LinearBzField>(Bz, 0)) :
+		std::static_pointer_cast<IStaticMagField>(std::make_shared<ConstBzField>(Bz));
     auto boris = BorisPusher(ef, mf);
 
     const double totalEnergy = Q0*ef->pot(0, r) + (gamma-1)*(M0*C0*C0);
 
     const double dt = 1e-15;
-    const int64_t steps = M_PI/(omega*dt);
+    const int64_t steps = static_cast<int>(M_PI/(omega*dt));
     const double startAngle = std::atan(dt * omega/2);
     boris.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle),0, 0, u, 0);
     for (int i = 1; i <= steps; ++i) {
@@ -229,4 +232,16 @@ TEST(BorisPusher, ConstBzErField) {
         (potEnergyBoris + kinEnergyBoris)/Q0,
         std::abs(totalEnergy/Q0*1e-8)
     );
+}
+
+
+TEST(BorisPusher, ConstBzErField)
+{
+	auxConstBzEr();
+}
+
+
+TEST(BorisPusher, LinearBzErField_k0)
+{
+	auxConstBzEr(true);
 }
