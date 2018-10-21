@@ -32,3 +32,28 @@ double ConstBzField::aTheta2r(double, double) const
 {
     return bz_/2;
 }
+
+double LinearBzField::aTheta(double z, double r) const
+{
+	return bz(z, r) * r / 2;
+}
+
+double LinearBzField::aTheta2z(double z, double r) const
+{
+	return k_ * r / 2;
+}
+
+double LinearBzField::aTheta2r(double z, double r) const
+{
+	return bz(z, r) / 2;
+}
+
+double LinearBzField::br(double z, double r) const
+{
+	return -r * (k_ / 2);
+}
+
+double LinearBzField::bz(double z, double r) const
+{
+	return b0_ + k_ * z;
+}
