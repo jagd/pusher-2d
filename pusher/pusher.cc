@@ -166,3 +166,38 @@ PV2D APhiPusher::pos() const
 {
     return pos_;
 }
+
+void LeapFrog::setElectronInfo(double x, double y, double z, double ux, double uy, double uz)
+{
+	pos_ = PV3D(x, y, z);
+	uLastHalf_ = PV3D(ux, uy, uz);
+}
+
+void LeapFrog::step(double dt)
+{
+	// not optimized, just for reference
+    // hence, v and u are (unnecessary) converted back and forth 
+    const PV2D zr = fromPV3D(pos_);
+    const PV3D posNorm = (zr.r == 0) ? PV3D(0,0,1) : (pos_/std::sqrt(dot(pos_, pos_)));
+    const auto br = magfield_->br(zr.z, zr.r);
+    const PV3D b3d(br*posNorm.x, br*posNorm.y, magfield_->bz(zr.z, zr.r));
+    const auto er = efield_->er(zr.z, zr.r);
+    const PV3D e3d(er*posNorm.x, er*posNorm.y, efield_->ez(zr.z, zr.r));
+	const double gammaLastHalf = u2gamma(std::sqrt(dot(uLastHalf_, uLastHalf_)));
+	const PV3D vLastHalf = uLastHalf_ / gammaLastHalf;
+	const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
+	const PV3D vNextHalf_ = vLastHalf + a * dt;
+	uLastHalf_ = vNextHalf_ * v2gamma(std::sqrt(dot(vNextHalf_, vNextHalf_)));
+	pos_ += vNextHalf_ * dt;
+}
+
+
+PV3D LeapFrog::pos() const
+{
+	return pos_;
+}
+
+PV3D LeapFrog::u() const
+{
+	return uLastHalf_;
+}

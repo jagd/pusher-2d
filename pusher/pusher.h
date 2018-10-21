@@ -24,6 +24,26 @@ protected:
     std::shared_ptr<IStaticMagField> magfield_;
 };
 
+class LeapFrog: public IPusher2D
+{
+public:
+    LeapFrog(
+        std::shared_ptr<IStaticEField> e,
+        std::shared_ptr<IStaticMagField> m
+    ): IPusher2D(e, m) {}
+    void setElectronInfo(
+        double x, double y, double z,
+        double ux, double uy, double uz
+    );
+    virtual void step(double dt) override;
+    PV3D pos() const;
+    PV3D u() const;
+
+private:
+    PV3D pos_;
+    PV3D uLastHalf_; //! u := gamma * v
+};
+
 class BorisPusher: public IPusher2D
 {
 public:
