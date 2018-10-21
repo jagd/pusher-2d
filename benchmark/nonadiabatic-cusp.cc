@@ -9,9 +9,7 @@ int main()
 	const double z0 = -50e-3;
 
     const auto ef = std::make_shared<ConstEzField>(Ez);
-    const auto mf = std::make_shared<LinearBzField>(0.5, -0.1);
-	// for the original non-adiabatic demo
-    // const auto mf = std::make_shared<LinearBzField>(0, k);
+    const auto mf = std::make_shared<LinearBzField>(0, k);
     auto aphi = APhiPusher(ef, mf);
 	auto boris = BorisPusher(ef, mf);
 	auto leapfrog = LeapFrog(ef, mf);
