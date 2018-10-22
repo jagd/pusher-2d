@@ -115,36 +115,32 @@ void APhiPusher::step(double dt)
     const double r = pos_.r;
     const double p = pTheta_;
     const double dgdphi = -Q0/(M0*C0*C0);
-    const double mur = p - Q0*r*magfield_->aTheta(z, r); // m * u_theta * r
-    const double commonTerm = p*p + C0*C0*M0*M0*r*r - Q0*r*magfield_->aTheta(z, r)*(p+mur);
-    const double denom = M0*M0*r*r*g*g*g;
-    // The minus in the middle is due to Grad(phi) = -E
-    const double fz = (
-        Q0*r*g*mur*magfield_->aTheta2z(z, r)
-        - commonTerm*dgdphi*efield_->ez(z, r)
-    ) / denom;
-    const double fr = (
-        g*mur*(p+Q0*r*r*magfield_->aTheta2r(z, r))
-        - r*commonTerm*dgdphi*efield_->er(z, r)
-    ) / (denom*r);
-    const PV2D f(fz, fr);
-    vLastHalf_ += f*dt;
-    pos_ += vLastHalf_*dt;
+	const double uTheta = magfield_->aTheta(z, r);
+	const double commonTerm = dgdphi * g*(C0*C0);
+	const PV2D negA(
+		Q0 / M0 * uTheta*magfield_->aTheta2z(z, r) - efield_->ez(z, r)*commonTerm
+		,
+		Q0 / M0 * uTheta*magfield_->aTheta2r(z, r) + pTheta_ * uTheta / (r*r*M0) - efield_->er(z, r)*commonTerm
+	);
+	const PV2D uNextHalf_ = uLastHalf_ - dt * negA;
+	const auto vNext = uNextHalf_ / g;  //!!!! TODO: use the correct gamma
+	pos_ += dt * vNext;
+	uLastHalf_ = uNextHalf_;
 }
 
 
 void APhiPusher::setElectronInfo(
     double z,
     double r,
-    double vzLastHalf,
-    double vrLastHalf,
+    double uzLastHalf,
+    double urLastHalf,
     double pTheta,
     double gamma
 )
 {
     assert(gamma >= 1);
     pos_ = PV2D(z, r);
-    vLastHalf_ = PV2D(vzLastHalf, vrLastHalf);
+    uLastHalf_ = PV2D(uzLastHalf, urLastHalf);
     pTheta_ = pTheta;
     totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
@@ -159,7 +155,7 @@ double APhiPusher::gamma() const
 
 PV2D APhiPusher::v() const
 {
-    return vLastHalf_;
+    return uLastHalf_ / gamma();
 }
 
 PV2D APhiPusher::pos() const
