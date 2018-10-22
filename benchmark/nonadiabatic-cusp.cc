@@ -5,8 +5,8 @@ int main()
 {
 	const double Ez = -10e3 / 10e-2;
     const double k = 1.0;
-	const double r0 = 1e-3;
-	const double z0 = -50e-3;
+	const double r0 = 11e-3;
+	const double z0 = -8e-3;
 
     const auto ef = std::make_shared<ConstEzField>(Ez);
     const auto mf = std::make_shared<LinearBzField>(0, k);
@@ -38,7 +38,7 @@ int main()
 				<< std::sqrt(pl.x*pl.x + pl.y*pl.y) << ' '
 				// field line:
 				<< pa.z << ' '
-				<< std::sqrt(flux0 / mf->bz(pa.z, 0)) << '\n';
+				<< std::sqrt(std::abs(flux0 / mf->bz(pa.z, 0))) << '\n';
 		}
 		aphi.step(dt);
 		boris.step(dt);
