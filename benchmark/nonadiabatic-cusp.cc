@@ -17,7 +17,7 @@ int main()
 
 	// const double flux0 = r0 * r0*mf->bz(0, r0);
 
-	double dtScale = 0.0625;
+	double dtScale = 16;
 	const double dt = 1e-15 * dtScale;
 	const int64_t maxStep = (1 << 20)/dtScale;
 	std::clog << "dt " << dt << '\n';
@@ -25,10 +25,10 @@ int main()
 	leapfrog.setElectronInfo(r0, 0, 0, 0, 0, u0);
 	boris.setElectronInfo(r0, 0, 0, 0, 0, u0);
 	rk.setElectronInfo(r0, 0, 0, 0, 0, u0);
-	aphi.setElectronInfo(0, r0, u0, 0, aphi.pTheta(0, r0, 0), u2gamma(u0));
+	aphi.setElectronInfo(0, r0, u0/u2gamma(u0), 0, aphi.pTheta(0, r0, 0), u2gamma(u0));
 
 	for (int64_t i = 0; i < maxStep; ++i) {
-		if (i % 8192 == 0) {
+		if (i % static_cast<int64_t>(std::ceil(256/dtScale)) == 0) {
 			const auto pl = leapfrog.pos();
 			const auto pb = boris.pos();
 			const auto pr = rk.pos();

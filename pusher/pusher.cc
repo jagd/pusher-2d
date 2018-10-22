@@ -188,6 +188,7 @@ void LeapFrog::step(double dt)
 	const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
 	uLastHalf_ += a * dt; // becomes uNextHalf
 
+    // TODO: extrapolate the correct gamma
 	const PV3D vNextHalf = uLastHalf_ / u2gamma(std::sqrt(dot(uLastHalf_, uLastHalf_)));
 	pos_ += vNextHalf * dt;
 }
