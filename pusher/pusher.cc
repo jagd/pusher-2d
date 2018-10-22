@@ -201,3 +201,69 @@ PV3D LeapFrog::u() const
 {
 	return uLastHalf_;
 }
+
+void RK4Pusher::setElectronInfo(double x, double y, double z, double ux, double uy, double uz)
+{
+	pos_ = PV3D(x, y, z);
+	uLast_ = PV3D(ux, uy, uz);
+}
+
+static PV3D p2v(const PV3D &p)
+{
+	const auto u = p / M0 / C0;
+	const auto gamma = std::sqrt(1 + dot(u, u));
+	return p / M0 / gamma;
+}
+
+void RK4Pusher::step(double dt)
+{
+	const double gammaLast = u2gamma(std::sqrt(dot(uLast_, uLast_)));
+	const PV3D vLast = uLast_ / gammaLast;
+	const PV3D pLast = uLast_ * M0;
+	
+	const PV3D r0 = dt * p2v(pLast);
+	const PV3D p0 = dt * f3D(pos_, pLast);
+
+	const auto r1 = dt * p2v(pLast + 0.5*p0);
+	const auto p1 = dt * f3D(pos_ + 0.5*r0, pLast + 0.5*p0);
+	const auto r2 = dt * p2v(pLast + 0.5*p1);
+	const auto p2 = dt * f3D(pos_ + 0.5*r1, pLast + 0.5*p1);
+	const auto r3 = dt * p2v(pLast + p2);
+	const auto p3 = dt * f3D(pos_ + r2, pLast + p2);
+
+	const PV3D pNext = pLast + 1.0 / 6 * (p0 + 2 * p1 + 2 * p2 + p3);
+	const PV3D vNext = p2v(pNext);
+	pos_ += 1.0 / 6 * (r0 + 2 * r1 + 2 * r2 + r3);
+	uLast_ = vNext * v2gamma(std::sqrt(dot(vNext, vNext)));
+}
+
+PV3D RK4Pusher::pos() const
+{
+	return pos_;
+}
+
+PV3D RK4Pusher::u() const
+{
+	return uLast_;
+}
+
+PV3D RK4Pusher::b3D(const PV3D & pos) const
+{
+    const PV2D zr = fromPV3D(pos);
+    const PV3D planarNorm = (zr.r == 0) ? PV3D(0,0,1) : (pos/zr.r);
+    const auto br = magfield_->br(zr.z, zr.r);
+    return PV3D(br*planarNorm.x, br*planarNorm.y, magfield_->bz(zr.z, zr.r));
+}
+
+PV3D RK4Pusher::e3D(const PV3D & pos) const
+{
+    const PV2D zr = fromPV3D(pos);
+    const PV3D planarNorm = (zr.r == 0) ? PV3D(0,0,1) : (pos/zr.r);
+	const auto er = efield_->er(zr.z, zr.r);
+	return PV3D(er*planarNorm.x, er*planarNorm.y, efield_->ez(zr.z, zr.r));
+}
+
+PV3D RK4Pusher::f3D(const PV3D & pos, const PV3D & p) const
+{
+	return Q0 * (cross(p2v(p), b3D(pos)) + e3D(pos));
+}
