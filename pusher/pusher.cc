@@ -115,32 +115,43 @@ void APhiPusher::step(double dt)
     const double r = pos_.r;
     const double p = pTheta_;
     const static double dgdphi = -Q0/(M0*C0*C0);
-    const double uTheta = magfield_->aTheta(z, r);
+    const double uTheta = pTheta_ / (M0*r) - Q0 / M0 * magfield_->aTheta(z, r);
     const double commonTerm = dgdphi * g*(C0*C0);
-    const PV2D negA(
+    const PV2D gradient(
     	Q0 / M0 * uTheta*magfield_->aTheta2z(z, r) - efield_->ez(z, r)*commonTerm
-    	,
+   	,
     	Q0 / M0 * uTheta*magfield_->aTheta2r(z, r) + pTheta_ * uTheta / (r*r*M0) - efield_->er(z, r)*commonTerm
     );
-    const PV2D uNextHalf_ = uLastHalf_ - dt * negA;
-    const auto vNext = uNextHalf_ / g;  //!!!! TODO: use the correct gamma
-    pos_ += dt * vNext;
-    uLastHalf_ = uNextHalf_;
+    const PV2D uNextHalf = uLastHalf_ + dt * gradient;
+#ifdef APHI_PUSHER_GAMMA_CORRECTION
+    const PV2D halfDist = (uNextHalf+uLastHalf_)*(dt/4/g);
+    // gamma_corrected_{t+dt/2} = gaemma_t
+    //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
+    // The next minus is for grad(phi) = -E
+    const double gammaNextHalf = g - (
+        dgdphi*efield_->ez(pos_.z, pos_.r)*halfDist.z
+      + dgdphi*efield_->er(pos_.z, pos_.r)*halfDist.r
+    );
+    pos_ += uNextHalf / gammaNextHalf * dt;
+#else
+    pos_ += uNextHalf / g * dt;
+#endif
+    uLastHalf_ = uNextHalf;
 }
 
 
 void APhiPusher::setElectronInfo(
     double z,
     double r,
-    double uzLastHalf,
-    double urLastHalf,
+    double vzLastHalf,
+    double vrLastHalf,
     double pTheta,
     double gamma
 )
 {
     assert(gamma >= 1);
     pos_ = PV2D(z, r);
-    uLastHalf_ = PV2D(uzLastHalf, urLastHalf);
+    uLastHalf_ = PV2D(vzLastHalf, vrLastHalf)*gamma;
     pTheta_ = pTheta;
     totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
@@ -169,6 +180,7 @@ void LeapFrog::setElectronInfo(double x, double y, double z, double ux, double u
 	uLastHalf_ = PV3D(ux, uy, uz);
 }
 
+#define LF_PUSHER_ALPHA_CORRECTION
 void LeapFrog::step(double dt)
 {
     const PV2D zr = fromPV3D(pos_);

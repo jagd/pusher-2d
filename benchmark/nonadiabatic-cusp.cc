@@ -3,7 +3,8 @@
 
 int main()
 {
-	const double Ez = -100e3 / 10e-2;
+	// const double Ez = -100e3 / 10e-2;
+	const double Ez = 0 / 10e-2; // even without electric field (gamma=const.) it does not work, why ?
     const double k = 100;
 	const double r0 = 1e-3;
     const double u0 = 1e8;
@@ -17,7 +18,7 @@ int main()
 
 	// const double flux0 = r0 * r0*mf->bz(0, r0);
 
-	double dtScale = 16;
+	double dtScale = 0.125;
 	const double dt = 1e-15 * dtScale;
 	const int64_t maxStep = (1 << 20)/dtScale;
 	std::clog << "dt " << dt << '\n';
