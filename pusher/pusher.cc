@@ -114,7 +114,7 @@ void APhiPusher::step(double dt)
     const double z = pos_.z;
     const double r = pos_.r;
     const double p = pTheta_;
-    const double dgdphi = -Q0/(M0*C0*C0);
+    const static double dgdphi = -Q0/(M0*C0*C0);
     const double mur = p - Q0*r*magfield_->aTheta(z, r); // m * u_theta * r
     const double commonTerm = p*p + C0*C0*M0*M0*r*r - Q0*r*magfield_->aTheta(z, r)*(p+mur);
     const double denom = M0*M0*r*r*g*g*g;
@@ -175,8 +175,6 @@ void LeapFrog::setElectronInfo(double x, double y, double z, double ux, double u
 
 void LeapFrog::step(double dt)
 {
-	// not optimized, just for reference
-    // hence, v and u are (unnecessary) converted back and forth 
     const PV2D zr = fromPV3D(pos_);
     const PV3D planarNorm = (zr.r == 0) ? PV3D(0,0,1) : (pos_/zr.r);
     const auto br = magfield_->br(zr.z, zr.r);
@@ -186,11 +184,24 @@ void LeapFrog::step(double dt)
 	const double gammaLastHalf = u2gamma(std::sqrt(dot(uLastHalf_, uLastHalf_)));
 	const PV3D vLastHalf = uLastHalf_ / gammaLastHalf;
 	const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
-	uLastHalf_ += a * dt; // becomes uNextHalf
+	const PV3D uNextHalf = uLastHalf_ + a * dt; // becomes uNextHalf
+#ifdef LF_PUSHER_ALPHA_CORRECTION
+    // extrapolate the correct gamma
+    // gamma_corrected_{t+dt/2} = gaemma_t
+    //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
+    // The next minus is for grad(phi) = -E
+    const static double dgdphi = -Q0/(M0*C0*C0);
+    const PV3D halfDist = (uNextHalf+uLastHalf_)*(dt/4/gammaLastHalf);
+    const double gammaNextHalf = gammaLastHalf - (
+        dgdphi*e3d.x*halfDist.x + dgdphi*e3d.y*halfDist.y + dgdphi*e3d.z*halfDist.z
+    );
+	const PV3D vNextHalf = uLastHalf_ / gammaNextHalf;
+#else
+	const PV3D vNextHalf = uLastHalf_ / gammaLastHalf;
+#endif 
 
-    // TODO: extrapolate the correct gamma
-	const PV3D vNextHalf = uLastHalf_ / u2gamma(std::sqrt(dot(uLastHalf_, uLastHalf_)));
 	pos_ += vNextHalf * dt;
+	uLastHalf_ = uNextHalf;
 }
 
 

@@ -3,7 +3,7 @@
 
 int main()
 {
-	const double Ez = 0 / 10e-2;
+	const double Ez = -100e3 / 10e-2;
     const double k = 100;
 	const double r0 = 1e-3;
     const double u0 = 1e8;
