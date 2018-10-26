@@ -122,7 +122,7 @@ void APhiPusher::step(double dt)
    	,
     	Q0 / M0 * uTheta*magfield_->aTheta2r(z, r) + pTheta_ * uTheta / (r*r*M0) - efield_->er(z, r)*commonTerm
     );
-    const PV2D uNextHalf = uLastHalf_ + dt * gradient;
+    const PV2D uNextHalf = uLastHalf_ + dt * gradient / g;
 #ifdef APHI_PUSHER_GAMMA_CORRECTION
     const PV2D halfDist = (uNextHalf+uLastHalf_)*(dt/4/g);
     // gamma_corrected_{t+dt/2} = gaemma_t
