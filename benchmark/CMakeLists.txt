@@ -64,3 +64,8 @@ target_link_libraries(const-bzez-largeorbit-demo aphi-pusher)
 add_executable(nonadiabatic-cusp-demo nonadiabatic-cusp.cc)
 target_compile_definitions(nonadiabatic-cusp-demo PRIVATE DEMO)
 target_link_libraries(nonadiabatic-cusp-demo aphi-pusher)
+
+# Linear moving (Relativistic)
+add_executable(linear-relativistic linear-relativistic.cc)
+target_compile_definitions(linear-relativistic PRIVATE DEMO)
+target_link_libraries(linear-relativistic aphi-pusher)
