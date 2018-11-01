@@ -26,7 +26,7 @@ int main()
 	leapfrog.setElectronInfo(r0, 0, 0, 0, 0, u0);
 	boris.setElectronInfo(r0, 0, 0, 0, 0, u0);
 	rk.setElectronInfo(r0, 0, 0, 0, 0, u0);
-	aphi.setElectronInfo(0, r0, u0/u2gamma(u0), 0, aphi.pTheta(0, r0, 0), u2gamma(u0));
+	aphi.setElectronInfo(0, r0, u0, 0, aphi.pTheta(0, r0, 0), u2gamma(u0));
 
 	for (int64_t i = 0; i < maxStep; ++i) {
 		if (i % static_cast<int64_t>(std::ceil(256/dtScale)) == 0) {

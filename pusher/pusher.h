@@ -101,7 +101,7 @@ public:
     void step(double dt) override;
     void setElectronInfo(
         double z, double r,
-        double vzLastHalf, double vrLastHalf,
+        double uzLastHalf, double urLastHalf,
         double pTheta,
         double gamma
     );

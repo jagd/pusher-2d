@@ -20,7 +20,7 @@ int main()
     const int64_t steps = (1 << 22)/dtScale;
     double dt = 1e-15;
     boris.setElectronInfo(r, 0, zInit, ur0, 0, uz0);
-    aphi.setElectronInfo(zInit, r, uz0/u2gamma(u0), ur0/u2gamma(u0), aphi.pTheta(zInit, r, 0), u2gamma(u0));
+    aphi.setElectronInfo(zInit, r, uz0, ur0, aphi.pTheta(zInit, r, 0), u2gamma(u0));
     std::clog << "dt = " << dt << '\n';
     for (int i = 0; i < steps; ++i) {
         aphi.step(dt);

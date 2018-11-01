@@ -28,8 +28,9 @@ TEST(APhiPusher, ZeroFieldsWithMotion) {
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
     const double dt = 1e-6;
-
-    pusher.setElectronInfo(0,1,1.0,0,pusher.pTheta(0, 1, 0), 1/std::sqrt(1-1/C0/C0));
+    const double v = 1.0;
+    const double gamma = 1 / std::sqrt(1 - v * v / C0 / C0);
+    pusher.setElectronInfo(0, 1, v*gamma, 0, pusher.pTheta(0, 1, 0), gamma);
     for (int i = 0; i < 10; ++i) {
         pusher.step(1e-6);
         const auto p = pusher.pos();

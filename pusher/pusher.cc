@@ -143,15 +143,15 @@ void APhiPusher::step(double dt)
 void APhiPusher::setElectronInfo(
     double z,
     double r,
-    double vzLastHalf,
-    double vrLastHalf,
+    double uzLastHalf,
+    double urLastHalf,
     double pTheta,
     double gamma
 )
 {
     assert(gamma >= 1);
     pos_ = PV2D(z, r);
-    uLastHalf_ = PV2D(vzLastHalf, vrLastHalf)*gamma;
+    uLastHalf_ = PV2D(uzLastHalf, urLastHalf);
     pTheta_ = pTheta;
     totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
