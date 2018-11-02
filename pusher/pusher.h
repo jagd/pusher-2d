@@ -37,7 +37,8 @@ public:
     );
     virtual void step(double dt) override;
     PV3D pos() const;
-    PV3D u() const;
+    PV3D uCurrent() const;
+    double gammaCurrent() const; //! current gamma
 
 private:
 	PV3D b3D(const PV3D &pos) const;
@@ -60,7 +61,8 @@ public:
     );
     virtual void step(double dt) override;
     PV3D pos() const;
-    PV3D u() const;
+    PV3D uLastHalf() const;
+    double gammaLastHalf() const;
 
 private:
     PV3D pos_;
@@ -80,8 +82,8 @@ public:
     );
     virtual void step(double dt) override;
     PV3D pos() const;
-    PV3D u() const;
-    double gamma() const;
+    PV3D uLastHalf() const;
+    double gammaCurrent() const;
 
 private:
     PV3D pos_;
@@ -106,8 +108,8 @@ public:
         double gamma
     );
     PV2D pos() const;
-    PV2D v() const;
-    double gamma() const;
+    PV2D vLastHalf() const;
+    double gammaCurrent() const;
 private:
     PV2D pos_;
     PV2D uLastHalf_;

@@ -109,7 +109,7 @@ TEST(APhiPusher, MirroredEzField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(
             totalEnergy/Q0,
             (potEnergy+kinEnergy)/Q0,
@@ -140,7 +140,7 @@ TEST(APhiPusher, ConstEzField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(
             totalEnergy/Q0,
             (potEnergy+kinEnergy)/Q0,
@@ -170,7 +170,7 @@ TEST(APhiPusher, ConstErField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(0, p.r);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(
             totalEnergy/Q0,
             (potEnergy+kinEnergy)/Q0,
@@ -205,7 +205,7 @@ static void auxConstBzEr(bool useDegradedLinearBzField = false)
 		aphi.step(dt);
 	}
 	const auto pAPhi = aphi.pos();
-	const double kinEnergyAPhi = (aphi.gamma() - 1.0)*(M0*C0*C0);
+	const double kinEnergyAPhi = (aphi.gammaCurrent() - 1.0)*(M0*C0*C0);
 	const double potEnergyAPhi = Q0 * ef->pot(pAPhi.z, pAPhi.r);
 	ASSERT_NEAR(r, pAPhi.r, r*1e-8);
 	ASSERT_NEAR(

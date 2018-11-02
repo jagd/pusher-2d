@@ -35,7 +35,7 @@ int main()
                           << std::sqrt(pb.x*pb.x + pb.y*pb.y) << ' '
                           << pa.z << ' '
                           << pa.r  << ' '
-                          << aphi.gamma() << '\n';
+                          << aphi.gammaCurrent() << '\n';
             }
             if (pa.z > 100e-2) {
                 break;

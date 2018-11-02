@@ -81,13 +81,13 @@ PV3D BorisPusher::pos() const
 }
 
 
-PV3D BorisPusher::u() const
+PV3D BorisPusher::uLastHalf() const
 {
     return uLastHalf_;
 }
 
 
-double BorisPusher::gamma() const
+double BorisPusher::gammaCurrent() const
 {
     return gammaAtPos_;
 }
@@ -101,7 +101,7 @@ double APhiPusher::pTheta(double z, double r, double uTheta) const
 
 void APhiPusher::step(double dt)
 {
-    const double g = gamma();
+    const double g = gammaCurrent();
     //
     // Example for an electron (Q > 0):
     // phi increases -> Epot=phi*Q decreases -> Ekin=Etotal-Epot increases
@@ -156,17 +156,17 @@ void APhiPusher::setElectronInfo(
     totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
 
-double APhiPusher::gamma() const
+double APhiPusher::gammaCurrent() const
 {
     const double Ekin = totalEnergy_-Q0*efield_->pot(pos_.z, pos_.r);
-//    assert(Ekin >= 0);
+//    assert(Ekin > = 0);
     const double gamma = 1.0 + Ekin/(M0*C0*C0);
     return gamma;
 }
 
-PV2D APhiPusher::v() const
+PV2D APhiPusher::vLastHalf() const
 {
-    return uLastHalf_ / gamma();
+    return uLastHalf_ / gammaCurrent();
 }
 
 PV2D APhiPusher::pos() const
@@ -218,9 +218,14 @@ PV3D LeapFrogPusher::pos() const
 	return pos_;
 }
 
-PV3D LeapFrogPusher::u() const
+PV3D LeapFrogPusher::uLastHalf() const
 {
 	return uLastHalf_;
+}
+
+double LeapFrogPusher::gammaLastHalf() const
+{
+    return u2gamma(std::sqrt(dot(uLastHalf_, uLastHalf_)));
 }
 
 void RK4Pusher::setElectronInfo(double x, double y, double z, double ux, double uy, double uz)
@@ -263,7 +268,7 @@ PV3D RK4Pusher::pos() const
 	return pos_;
 }
 
-PV3D RK4Pusher::u() const
+PV3D RK4Pusher::uCurrent() const
 {
 	return uLast_;
 }
@@ -287,4 +292,9 @@ PV3D RK4Pusher::e3D(const PV3D & pos) const
 PV3D RK4Pusher::f3D(const PV3D & pos, const PV3D & p) const
 {
 	return Q0 * (cross(p2v(p), b3D(pos)) + e3D(pos));
+}
+
+double RK4Pusher::gammaCurrent() const
+{
+    return u2gamma(std::sqrt(dot(uLast_, uLast_)));
 }

@@ -136,7 +136,7 @@ TEST(BorisPusher, MirroredEzField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-5);
     }
     ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
@@ -163,7 +163,7 @@ TEST(BorisPusher, ConstEzField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-5);
     }
     ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
@@ -190,7 +190,7 @@ TEST(BorisPusher, ConstErField) {
         const auto p = pusher.pos();
         const double r = std::sqrt(p.x*p.x + p.y*p.y);
         const double potEnergy = Q0*ef->pot(0, r);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-5);
     }
     const auto p = pusher.pos();
@@ -225,7 +225,7 @@ static void auxConstBzEr(bool useDegradedLinearBzField = false)
     }
     const auto pBoris = boris.pos();
     const double potEnergyBoris = Q0*ef->pot(pBoris.z, fromPV3D(pBoris).r);
-    const double kinEnergyBoris = (boris.gamma()-1.0)*(M0*C0*C0);
+    const double kinEnergyBoris = (boris.gammaCurrent()-1.0)*(M0*C0*C0);
     ASSERT_NEAR(r, fromPV3D(pBoris).r, r*1e-8);
     ASSERT_NEAR(
         totalEnergy/Q0,
