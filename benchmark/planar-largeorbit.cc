@@ -21,7 +21,8 @@ int main()
 #ifdef DEMO
     std::cout << "# 1:omega*dt 2:turns 3:rel_error_r_leapfrog 4:rel_error_r_boris 5:rel_error_r_aphi 6:rel_error_r_rk4\n";
 #else
-    std::cout << "# 1:omega*dt 2:tol_leapfrog 3:tol_boris 4:tol_aphi 5:tol_rk4\n";
+    std::cout << "# 1:omega*dt 2:tol_r_leapfrog 3:tol_r_boris 4:tol_r_phi 5:tol_r_rk4 "
+                 "6:tol_gamma_leapfrog  7:tol_gamma_boris 8:tol:gamma_aphi 9:tol_gamma_rk4\n";
 #endif
 
     for (double dt = 1e-12; dt > 1e-18; dt *= 0.5) {
@@ -44,11 +45,11 @@ int main()
                 const auto pb = boris.pos();
                 const auto pl = lf.pos();
                 const auto pr = rk.pos();
-                std::cout << omega*dt << ' ' << omega*dt*i/(2*M_PI) << ' '
-                          <<  (fromPV3D(pl).r-r)/r << ' '
-                          <<  (fromPV3D(pb).r-r)/r << ' '
-                          <<  (pa.r-r)/r << ' '
-                          <<  (fromPV3D(pr).r-r)/r << '\n';
+                std::cout << omega * dt << ' ' << omega * dt*i / (2 * M_PI) << ' '
+                    << (fromPV3D(pl).r - r) / r << ' '
+                    << (fromPV3D(pb).r - r) / r << ' '
+                    << (pa.r - r) / r << ' '
+                    << (fromPV3D(pr).r - r) / r << '\n';
             }
             aphi.step(dt);
             boris.step(dt);
@@ -57,10 +58,14 @@ int main()
         }
         std::cout << '\n';
 #else
-        double tola = 0;
-        double tolb = 0;
-        double toll = 0;
-        double tolr = 0;
+        double tolA = 0;
+        double tolB = 0;
+        double tolL = 0;
+        double tolR = 0;
+        double tolGL = 0;
+        double tolGB = 0;
+        double tolGA = 0;
+        double tolGR = 0;
         for (int64_t i = 0; i < steps; ++i) {
             aphi.step(dt);
             boris.step(dt);
@@ -70,16 +75,24 @@ int main()
             const auto pb = boris.pos();
             const auto pl = lf.pos();
             const auto pr = rk.pos();
-            toll = std::max(toll, std::abs((fromPV3D(pl).r-r)/r));
-            tolb = std::max(tolb, std::abs((fromPV3D(pb).r-r)/r));
-            tola = std::max(tola, std::abs((pa.r-r)/r));
-            tolr = std::max(tolr, std::abs((fromPV3D(pr).r-r)/r));
+            tolL = std::max(tolL, std::abs((fromPV3D(pl).r-r)/r));
+            tolB = std::max(tolB, std::abs((fromPV3D(pb).r-r)/r));
+            tolA = std::max(tolA, std::abs((pa.r-r)/r));
+            tolR = std::max(tolR, std::abs((fromPV3D(pr).r-r)/r));
+            tolGL = std::max(tolGL, std::abs(lf.gammaLastHalf() - gamma));
+            tolGB = std::max(tolGB, std::abs(boris.gammaCurrent() - gamma));
+            tolGA = std::max(tolGA, std::abs(aphi.gammaCurrent() - gamma));
+            tolGR = std::max(tolGR, std::abs(rk.gammaCurrent() - gamma));
         }
         std::cout << omega*dt << ' '
-                  << toll << ' '
-                  << tolb << ' '
-                  << tola << ' '
-                  << tolr << '\n';
+                  << tolL << ' '
+                  << tolB << ' '
+                  << tolA << ' '
+                  << tolR << ' '
+                  << tolGL << ' '
+                  << tolGB << ' '
+                  << tolGA << ' '
+                  << tolGR << '\n';
 #endif
     }
     return 0;
