@@ -14,7 +14,7 @@ int main()
     auto aphi = APhiPusher(ef, mf);
 	auto boris = BorisPusher(ef, mf);
 	auto rk = RK4Pusher(ef, mf);
-	auto leapfrog = LeapFrog(ef, mf);
+	auto leapfrog = LeapFrogPusher(ef, mf);
 
 	// const double flux0 = r0 * r0*mf->bz(0, r0);
 

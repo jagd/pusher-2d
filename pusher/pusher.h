@@ -47,10 +47,10 @@ private:
     PV3D uLast_; //! u := gamma * v
 };
 
-class LeapFrog: public IPusher2D
+class LeapFrogPusher: public IPusher2D
 {
 public:
-    LeapFrog(
+    LeapFrogPusher(
         std::shared_ptr<IStaticEField> e,
         std::shared_ptr<IStaticMagField> m
     ): IPusher2D(e, m) {}

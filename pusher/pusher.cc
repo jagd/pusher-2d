@@ -174,14 +174,14 @@ PV2D APhiPusher::pos() const
     return pos_;
 }
 
-void LeapFrog::setElectronInfo(double x, double y, double z, double ux, double uy, double uz)
+void LeapFrogPusher::setElectronInfo(double x, double y, double z, double ux, double uy, double uz)
 {
 	pos_ = PV3D(x, y, z);
 	uLastHalf_ = PV3D(ux, uy, uz);
 }
 
 #define LF_PUSHER_ALPHA_CORRECTION
-void LeapFrog::step(double dt)
+void LeapFrogPusher::step(double dt)
 {
     const PV2D zr = fromPV3D(pos_);
     const PV3D planarNorm = (zr.r == 0) ? PV3D(0,0,1) : (pos_/zr.r);
@@ -213,12 +213,12 @@ void LeapFrog::step(double dt)
 }
 
 
-PV3D LeapFrog::pos() const
+PV3D LeapFrogPusher::pos() const
 {
 	return pos_;
 }
 
-PV3D LeapFrog::u() const
+PV3D LeapFrogPusher::u() const
 {
 	return uLastHalf_;
 }
