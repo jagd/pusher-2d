@@ -18,17 +18,24 @@ add_executable(planar-smallorbit-perioderror-demo planar-smallorbit-perioderror.
 target_link_libraries(planar-smallorbit-perioderror-demo aphi-pusher)
 
 # Performance measurement based on small orbit benchmarks
-add_executable(planar-perf planar-perf.cc)
-target_link_libraries(planar-perf aphi-pusher)
+add_executable(perf-zero perf-zero.cc)
+target_link_libraries(perf-zero aphi-pusher)
 
-add_executable(planar-perf-boris planar-perf.cc)
-target_compile_definitions(planar-perf-boris PRIVATE BORIS_ONLY)
-target_link_libraries(planar-perf-boris aphi-pusher)
+add_executable(perf-zero-boris perf-zero.cc)
+target_compile_definitions(perf-zero-boris PRIVATE BORIS_ONLY)
+target_link_libraries(perf-zero-boris aphi-pusher)
 
-add_executable(planar-perf-aphi planar-perf.cc)
-target_compile_definitions(planar-perf-aphi PRIVATE APHI_ONLY)
-target_link_libraries(planar-perf-aphi aphi-pusher)
+add_executable(perf-zero-aphi perf-zero.cc)
+target_compile_definitions(perf-zero-aphi PRIVATE APHI_ONLY)
+target_link_libraries(perf-zero-aphi aphi-pusher)
 
+add_executable(perf-zero-leapfrog perf-zero.cc)
+target_compile_definitions(perf-zero-leapfrog PRIVATE LEAPFROG_ONLY)
+target_link_libraries(perf-zero-leapfrog aphi-pusher)
+
+add_executable(perf-zero-rk4 perf-zero.cc)
+target_compile_definitions(perf-zero-rk4 PRIVATE RK4_ONLY)
+target_link_libraries(perf-zero-rk4 aphi-pusher)
 
 # Constant Ez
 add_executable(const-ez const-ez.cc)
