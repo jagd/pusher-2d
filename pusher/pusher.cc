@@ -123,7 +123,7 @@ void APhiPusher::step(double dt)
     	Q0 / M0 * uTheta*magfield_->aTheta2r(z, r) + pTheta_ * uTheta / (r*r*M0) - efield_->er(z, r)*commonTerm
     );
     const PV2D uNextHalf = uLastHalf_ + dt * gradient / g;
-#ifdef APHI_PUSHER_GAMMA_CORRECTION
+#ifdef GAMMA_CORRECTION_APHI
     const PV2D halfDist = (uNextHalf+uLastHalf_)*(dt/4/g);
     // gamma_corrected_{t+dt/2} = gaemma_t
     //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
@@ -180,7 +180,6 @@ void LeapFrogPusher::setElectronInfo(double x, double y, double z, double ux, do
 	uLastHalf_ = PV3D(ux, uy, uz);
 }
 
-#define LF_PUSHER_ALPHA_CORRECTION
 void LeapFrogPusher::step(double dt)
 {
     const PV2D zr = fromPV3D(pos_);
@@ -193,7 +192,7 @@ void LeapFrogPusher::step(double dt)
     const PV3D vLastHalf = uLastHalf_ / gammaLastHalf;
     const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
     const PV3D uNextHalf = uLastHalf_ + a * dt; // becomes uNextHalf
-#ifdef LF_PUSHER_ALPHA_CORRECTION
+#ifdef GAMMA_CORRECTION_LEAPFROG
     // extrapolate the correct gamma
     // gamma_corrected_{t+dt/2} = gaemma_t
     //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
