@@ -11,7 +11,7 @@ int main()
     const double v = u/gamma;
     const double omega = v/r;
 
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
     auto aphi = APhiPusher(ef, mf);
     auto boris = BorisPusher(ef, mf);

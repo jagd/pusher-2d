@@ -20,7 +20,7 @@ int main()
 
 	double dtScale = 0.125;
 	const double dt = 1e-15 * dtScale;
-	const int64_t maxStep = (1 << 20)/dtScale;
+	const int64_t maxStep = static_cast<int64_t>((1 << 20)/dtScale);
 	std::clog << "dt " << dt << '\n';
 
 	leapfrog.setElectronInfo(r0, 0, 0, 0, 0, u0);

@@ -13,14 +13,14 @@ TEST(Aux, V2gammaGamma2v) {
 
 
 TEST(BorisPusher, Ctor) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     BorisPusher(ef, mf);
 }
 
 
 TEST(BorisPusher, ZeroFieldsWithoutMotion) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = BorisPusher(ef, mf);
     pusher.setElectronInfo(0,0,0,0,0,0);
@@ -43,7 +43,7 @@ TEST(BorisPusher, ZeroFieldsWithoutMotion) {
 
 
 TEST(BorisPusher, ZeroFieldsWithMotion) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = BorisPusher(ef, mf);
     const double dt = 1e-6;
@@ -76,7 +76,7 @@ TEST(BorisPusher, PlainLargeOrbit) {
     const double v = u/gamma;
     const double omega = v/r;
 
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = BorisPusher(ef, mf);
 
@@ -99,7 +99,7 @@ TEST(BorisPusher, PlainSmallOrbit) {
     const double v = u/gamma;
     const double omega = v/rLarmor;
 
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = BorisPusher(ef, mf);
 

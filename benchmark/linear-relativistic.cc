@@ -17,7 +17,7 @@ int main()
     auto aphi = APhiPusher(ef, mf);
 
     const double dtScale = 0.01;
-    const int64_t steps = (1 << 22)/dtScale;
+    const int64_t steps = static_cast<int64_t>((1 << 22)/dtScale);
     double dt = 1e-15;
     boris.setElectronInfo(r, 0, zInit, ur0, 0, uz0);
     aphi.setElectronInfo(zInit, r, uz0, ur0, aphi.pTheta(zInit, r, 0), u2gamma(u0));

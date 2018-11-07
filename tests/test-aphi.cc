@@ -3,14 +3,14 @@
 #include <memory>
 
 TEST(APhiPusher, Ctor) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     APhiPusher(ef, mf);
 }
 
 
 TEST(APhiPusher, ZeroFieldsWithoutMotion) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
     pusher.setElectronInfo(0,1,0,0,pusher.pTheta(0, 1, 0), 1.0);
@@ -24,7 +24,7 @@ TEST(APhiPusher, ZeroFieldsWithoutMotion) {
 
 
 TEST(APhiPusher, ZeroFieldsWithMotion) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
     const double dt = 1e-6;
@@ -45,7 +45,7 @@ TEST(APhiPusher, PlainLargeOrbit) {
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double r = -M0/Q0/B * u;
 
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = APhiPusher(ef, mf);
 
@@ -68,7 +68,7 @@ TEST(APhiPusher, PlainSmallOrbit) {
     const double v = u/gamma;
     const double omega = v/rLarmor;
 
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = APhiPusher(ef, mf);
 

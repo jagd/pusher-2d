@@ -38,7 +38,7 @@ class ZeroField : public IStaticMagField, public IStaticEField
 };
 
 
-#if defined(APHI_ONLY) || defined(BORIS_ONLY) || defined(LEAPFROG_ONLY) || defined(RK4_ONLY) 
+#if defined(APHI_ONLY) || defined(BORIS_ONLY) || defined(LEAPFROG_ONLY) || defined(RK4_ONLY)
 #define SINGLE_PUSHER
 #endif
 
