@@ -125,7 +125,7 @@ void APhiPusher::step(double dt)
     const PV2D uNextHalf = uLastHalf_ + dt * gradient / g;
 #ifdef GAMMA_CORRECTION_APHI
     const PV2D halfDist = (uNextHalf+uLastHalf_)*(dt/4/g);
-    // gamma_corrected_{t+dt/2} = gaemma_t
+    // gamma_corrected_{t+dt/2} = gamma_t
     //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
     // The next minus is for grad(phi) = -E
     const double gammaNextHalf = g - (
@@ -192,21 +192,7 @@ void LeapFrogPusher::step(double dt)
     const PV3D vLastHalf = uLastHalf_ / gammaLastHalf;
     const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
     const PV3D uNextHalf = uLastHalf_ + a * dt; // becomes uNextHalf
-#ifdef GAMMA_CORRECTION_LEAPFROG
-    // extrapolate the correct gamma
-    // gamma_corrected_{t+dt/2} = gaemma_t
-    //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
-    // The next minus is for grad(phi) = -E
-    const static double dgdphi = -Q0/(M0*C0*C0);
-    const PV3D halfDist = (uNextHalf+uLastHalf_)*(dt/4/gammaLastHalf);
-    const double gammaNextHalf = gammaLastHalf - (
-        dgdphi*e3d.x*halfDist.x + dgdphi*e3d.y*halfDist.y + dgdphi*e3d.z*halfDist.z
-    );
-	const PV3D vNextHalf = uLastHalf_ / gammaNextHalf;
-#else
-	const PV3D vNextHalf = uLastHalf_ / gammaLastHalf;
-#endif
-
+    const PV3D vNextHalf = uNextHalf / u2gamma(std::sqrt((dot(uNextHalf, uNextHalf))));
 	pos_ += vNextHalf * dt;
 	uLastHalf_ = uNextHalf;
 }
