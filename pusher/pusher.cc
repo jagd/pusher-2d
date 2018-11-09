@@ -124,6 +124,7 @@ void APhiPusher::step(double dt)
     );
     const PV2D uNextHalf = uLastHalf_ + dt * gradient / g;
 #ifdef GAMMA_CORRECTION_APHI
+#if 0
     const PV2D halfDist = (uNextHalf+uLastHalf_)*(dt/4/g);
     // gamma_corrected_{t+dt/2} = gamma_t
     //     + grad{gamma}|_{t=t} (dot) (u_{t-dt/2}+ u_{t+dt/2})/2/gamma_{t} * dt/2
@@ -132,8 +133,17 @@ void APhiPusher::step(double dt)
         dgdphi*efield_->ez(pos_.z, pos_.r)*halfDist.z
       + dgdphi*efield_->er(pos_.z, pos_.r)*halfDist.r
     );
-    pos_ += uNextHalf / gammaNextHalf * dt;
 #else
+    // Method 2
+    // The next minus is for grad(phi) = -E
+    const double disc = g * g - 2 * dt* (
+          dgdphi*efield_->ez(pos_.z, pos_.r)*uNextHalf.z
+        + dgdphi * efield_->er(pos_.z, pos_.r)*uNextHalf.r
+    );
+    const double gammaNextHalf = (g + std::sqrt(disc)) / 2;
+#endif
+    pos_ += uNextHalf / gammaNextHalf * dt;
+#else // no GAMMA_CORRECTION_APHI
     pos_ += uNextHalf / g * dt;
 #endif
     uLastHalf_ = uNextHalf;
