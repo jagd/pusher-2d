@@ -34,9 +34,10 @@ int main()
         if (++j >= (128/dtScale)) {
             j = 0;
             std::clog << i * 100.0 / steps << " %\n" << aphi.gammaCurrent() << '\n';
-            const auto pBoris = boris.pos();
-            const double potEnergyBoris = Q0 * ef->pot(pBoris.z, 0);
+            const double potEnergyBoris = Q0 * ef->pot(boris.pos().z, 0);
             const double kinEnergyBoris = (boris.gammaCurrent() - 1.0)*(M0*C0*C0);
+            const double potEnergyRK = Q0 * ef->pot(rk.pos().z, 0);
+            const double kinEnergyRK = (rk.gammaCurrent() - 1.0)*(M0*C0*C0);
             const double t = dt * (i);
             const double exactZ = (M0*C0*C0/Ez/Q0)*(std::sqrt(1+(Ez*Ez*Q0*Q0/(M0*M0*C0*C0)*t*t)) - 1);
             std::cout << i * dt << ' '
@@ -45,7 +46,8 @@ int main()
                 << boris.pos().z << ' '
                 << aphi.pos().z << ' '
                 << rk.pos().z << ' '
-                << potEnergyBoris + kinEnergyBoris<< '\n';
+                << (potEnergyBoris + kinEnergyBoris)/Q0/1e3<< ' '
+                << (potEnergyRK + kinEnergyRK)/Q0/1e3<< '\n';
         }
     }
     return 0;
