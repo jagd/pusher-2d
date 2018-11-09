@@ -126,8 +126,7 @@ void APhiPusher::step(double dt)
     );
     const PV2D uNextHalf = uLastHalf_ + dt * gradient / g;
 #ifdef GAMMA_CORRECTION_APHI
-    // The next minus is for grad(phi) = -E
-    const double disc = g * g - 2 * dt* (dgdz*uNextHalf.z + dgdr*uNextHalf.r);
+    const double disc = g * g + 2 * dt* (dgdz*uNextHalf.z + dgdr*uNextHalf.r);
     const double gammaNextHalf = (g + std::sqrt(disc)) / 2;
     pos_ += uNextHalf / gammaNextHalf * dt;
 #else // no GAMMA_CORRECTION_APHI
