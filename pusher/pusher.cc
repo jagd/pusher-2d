@@ -58,18 +58,18 @@ void BorisPusher::step(double dt)
     const auto er = efield_->er(zr.z, zr.r);
     const PV3D e3d(er*planarNorm.x, er*planarNorm.y, efield_->ez(zr.z, zr.r));
     const PV3D uMinus = uLastHalf_ + (Q0/2/M0)*dt*e3d;
-    const double uMinusNorm2 = dot(uMinus, uMinus);
+    const double uMinusNorm2 = norm2(uMinus);
     const double gammaN = std::sqrt(1.0 + uMinusNorm2/(C0*C0));
 
     const auto br = magfield_->br(zr.z, zr.r);
     const PV3D b3d(br*planarNorm.x, br*planarNorm.y, magfield_->bz(zr.z, zr.r));
     const PV3D t = (Q0/M0/2)*dt/gammaN*b3d;
-    const PV3D s = 2.0/(1+dot(t,t)) * t;
+    const PV3D s = 2.0/(1+norm2(t)) * t;
     const PV3D uPrime = uMinus + cross(uMinus, t);
     const PV3D uPlus = uMinus + cross(uPrime, s);
 
     const PV3D uNextHalf = uPlus + (Q0/2/M0)*dt*e3d;
-    pos_ = pos_ + dt/(std::sqrt(1+dot(uNextHalf, uNextHalf)/(C0*C0))) * uNextHalf;
+    pos_ = pos_ + dt/(std::sqrt(1+norm2(uNextHalf)/(C0*C0))) * uNextHalf;
     uLastHalf_ = uNextHalf;
     gammaAtPos_ = gammaN;
 }
@@ -184,11 +184,11 @@ void LeapFrogPusher::step(double dt)
     const PV3D b3d(br*planarNorm.x, br*planarNorm.y, magfield_->bz(zr.z, zr.r));
     const auto er = efield_->er(zr.z, zr.r);
     const PV3D e3d(er*planarNorm.x, er*planarNorm.y, efield_->ez(zr.z, zr.r));
-    const double gammaLastHalf = u2gamma(std::sqrt(dot(uLastHalf_, uLastHalf_)));
+    const double gammaLastHalf = u2gamma(std::sqrt(norm2(uLastHalf_)));
     const PV3D vLastHalf = uLastHalf_ / gammaLastHalf;
     const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
     const PV3D uNextHalf = uLastHalf_ + a * dt; // becomes uNextHalf
-    const PV3D vNextHalf = uNextHalf / u2gamma(std::sqrt((dot(uNextHalf, uNextHalf))));
+    const PV3D vNextHalf = uNextHalf / u2gamma(std::sqrt((norm2(uNextHalf))));
 	pos_ += vNextHalf * dt;
 	uLastHalf_ = uNextHalf;
 }
@@ -206,7 +206,7 @@ PV3D LeapFrogPusher::uLastHalf() const
 
 double LeapFrogPusher::gammaLastHalf() const
 {
-    return u2gamma(std::sqrt(dot(uLastHalf_, uLastHalf_)));
+    return u2gamma(std::sqrt(norm2(uLastHalf_)));
 }
 
 void RK4Pusher::setElectronInfo(double x, double y, double z, double ux, double uy, double uz)
@@ -218,13 +218,13 @@ void RK4Pusher::setElectronInfo(double x, double y, double z, double ux, double 
 static PV3D p2v(const PV3D &p)
 {
 	const auto u = p / M0 / C0;
-	const auto gamma = std::sqrt(1 + dot(u, u));
+	const auto gamma = std::sqrt(1 + norm2(u));
 	return p / M0 / gamma;
 }
 
 void RK4Pusher::step(double dt)
 {
-	const double gammaLast = u2gamma(std::sqrt(dot(uLast_, uLast_)));
+	const double gammaLast = u2gamma(std::sqrt(norm2(uLast_)));
 	const PV3D vLast = uLast_ / gammaLast;
 	const PV3D pLast = uLast_ * M0;
 	
@@ -241,7 +241,7 @@ void RK4Pusher::step(double dt)
 	const PV3D pNext = pLast + 1.0 / 6 * (p0 + 2 * p1 + 2 * p2 + p3);
 	const PV3D vNext = p2v(pNext);
 	pos_ += 1.0 / 6 * (r0 + 2 * r1 + 2 * r2 + r3);
-	uLast_ = vNext * v2gamma(std::sqrt(dot(vNext, vNext)));
+	uLast_ = vNext * v2gamma(std::sqrt(norm2(vNext)));
 }
 
 PV3D RK4Pusher::pos() const
@@ -277,5 +277,5 @@ PV3D RK4Pusher::f3D(const PV3D & pos, const PV3D & p) const
 
 double RK4Pusher::gammaCurrent() const
 {
-    return u2gamma(std::sqrt(dot(uLast_, uLast_)));
+    return u2gamma(std::sqrt(norm2(uLast_)));
 }
