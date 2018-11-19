@@ -107,31 +107,24 @@ double APhiPusher::pTheta(double z, double r, double uTheta) const
 void APhiPusher::step(double dt)
 {
     const double g = gammaCurrent();
-    //
-    // Example for an electron (Q > 0):
-    // phi increases -> Epot=phi*Q decreases -> Ekin=Etotal-Epot increases
-    //               -> Gamma=Ekin/(M0C^2) increases -> dg/dphi positive
-    // For a positive ion (Q < 0):
-    // phi increases -> Epot=phi*Q increases -> Ekin=Etotal-Epot decreases
-    //               -> Gamma=Ekin/(M0C^2) decreases -> dg/dphi negative
-    // Hence, the sign of dgamma/dphi is in -1*Q0.
-    //
     const double z = pos_.z;
     const double r = pos_.r;
-    const double p = pTheta_;
-    const static double dgdphi = -Q0/(M0*C0*C0);
-    const double uTheta = pTheta_ / (M0*r) - Q0 / M0 * magfield_->aTheta(z, r);
-    const double commonTerm = g*(C0*C0);
-    const double dgdz = -dgdphi*efield_->ez(z, r);
-    const double dgdr = -dgdphi*efield_->er(z, r);
-    const PV2D gradient(
-    	Q0 / M0 * uTheta*magfield_->aTheta2z(z, r) + dgdz*commonTerm
-   	,
-    	Q0 / M0 * uTheta*magfield_->aTheta2r(z, r) + pTheta_ * uTheta / (r*r*M0) + dgdr*commonTerm
+    const double ez = efield_->ez(z, r);
+    const double er = efield_->er(z, r);
+    const double p2mr = pTheta_/ (M0*r);
+    const double uTheta = p2mr - Q0 / M0 * magfield_->aTheta(z, r);
+    const double vTheta = uTheta / g;
+    const PV2D dudt(
+        Q0 / M0 * (vTheta* magfield_->aTheta2z(z, r) + ez)
+        ,
+        vTheta*(p2mr / r + Q0 / M0 * magfield_->aTheta2r(z, r)) + Q0 / M0 * er
     );
-    const PV2D uNextHalf = uLastHalf_ + dt * gradient / g;
+    const PV2D uNextHalf = uLastHalf_ + dt * dudt;
 #ifdef GAMMA_CORRECTION_APHI
-    const double disc = g * g + 2 * dt* (dgdz*uNextHalf.z + dgdr*uNextHalf.r);
+    // discriminant
+    const double disc = g * g + (2 * Q0 / M0 / C0 / C0) * dt * (
+        ez*uNextHalf.z + er*uNextHalf.r
+    );
     const double gammaNextHalf = (g + std::sqrt(disc)) / 2;
     pos_ += uNextHalf / gammaNextHalf * dt;
 #else // no GAMMA_CORRECTION_APHI
