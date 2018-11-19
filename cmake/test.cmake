@@ -6,7 +6,7 @@ macro(TEST_REGISTER)
     list(APPEND unit_tests ${_test_exec})
     set(_list_var "${ARGN}")
     list(REMOVE_AT _list_var 0)
-    add_test(${_test_name} ${_test_exec})
+    add_test(NAME ${_test_name} COMMAND ${_test_exec} WORKING_DIRECTORY ${UNIT_TEST_BIN_OUTPUT_DIR})
     add_executable(${_test_exec} ${_list_var})
     target_compile_definitions(${_test_exec} PRIVATE
         BOOST_TEST_DYN_LINK

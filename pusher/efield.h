@@ -12,16 +12,6 @@ public:
 };
 
 
-class ZeroEField: public IStaticEField
-{
-public:
-    virtual ~ZeroEField() override = default;
-    virtual double pot(double, double) const override { return 0; }
-    virtual double ez(double, double) const override { return 0; }
-    virtual double er(double, double) const override { return 0; }
-};
-
-
 class ConstEzField: public IStaticEField
 {
 public:

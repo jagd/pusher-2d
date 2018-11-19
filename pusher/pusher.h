@@ -37,7 +37,8 @@ public:
     );
     virtual void step(double dt) override;
     PV3D pos() const;
-    PV3D u() const;
+    PV3D uCurrent() const;
+    double gammaCurrent() const; //! current gamma
 
 private:
 	PV3D b3D(const PV3D &pos) const;
@@ -47,10 +48,10 @@ private:
     PV3D uLast_; //! u := gamma * v
 };
 
-class LeapFrog: public IPusher2D
+class LeapFrogPusher: public IPusher2D
 {
 public:
-    LeapFrog(
+    LeapFrogPusher(
         std::shared_ptr<IStaticEField> e,
         std::shared_ptr<IStaticMagField> m
     ): IPusher2D(e, m) {}
@@ -60,7 +61,8 @@ public:
     );
     virtual void step(double dt) override;
     PV3D pos() const;
-    PV3D u() const;
+    PV3D uLastHalf() const;
+    double gammaLastHalf() const;
 
 private:
     PV3D pos_;
@@ -80,8 +82,8 @@ public:
     );
     virtual void step(double dt) override;
     PV3D pos() const;
-    PV3D u() const;
-    double gamma() const;
+    PV3D uLastHalf() const;
+    double gammaCurrent() const;
 
 private:
     PV3D pos_;
@@ -101,22 +103,23 @@ public:
     void step(double dt) override;
     void setElectronInfo(
         double z, double r,
-        double vzLastHalf, double vrLastHalf,
+        double uzLastHalf, double urLastHalf,
         double pTheta,
         double gamma
     );
     PV2D pos() const;
-    PV2D v() const;
-    double gamma() const;
+    PV2D vLastHalf() const;
+    double gammaCurrent() const;
 private:
     PV2D pos_;
-    PV2D vLastHalf_;
+    PV2D uLastHalf_;
     double pTheta_;
     double totalEnergy_; //! in Volt*Q, where Q is signed
 };
 
 double v2gamma(double v);
 double u2gamma(double u);
+double usqr2gamma(double usqr);
 double v2u(double v);
 double gamma2v(double gamma);
 

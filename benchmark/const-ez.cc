@@ -43,7 +43,7 @@ int main()
         const auto pBoris = boris.pos();
         const auto pAPhi = aphi.pos();
         const double potEnergyBoris = Q0*ef->pot(pBoris.z, 0);
-        const double kinEnergyBoris = (boris.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergyBoris = (boris.gammaCurrent()-1.0)*(M0*C0*C0);
         std::cout << std::setprecision(18)
                   << dt << ' '
                   << (pBoris.z - refZ)/refZ << ' '

@@ -3,14 +3,14 @@
 #include <memory>
 
 TEST(APhiPusher, Ctor) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     APhiPusher(ef, mf);
 }
 
 
 TEST(APhiPusher, ZeroFieldsWithoutMotion) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
     pusher.setElectronInfo(0,1,0,0,pusher.pTheta(0, 1, 0), 1.0);
@@ -24,12 +24,13 @@ TEST(APhiPusher, ZeroFieldsWithoutMotion) {
 
 
 TEST(APhiPusher, ZeroFieldsWithMotion) {
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto pusher = APhiPusher(ef, mf);
     const double dt = 1e-6;
-
-    pusher.setElectronInfo(0,1,1.0,0,pusher.pTheta(0, 1, 0), 1/std::sqrt(1-1/C0/C0));
+    const double v = 1.0;
+    const double gamma = 1 / std::sqrt(1 - v * v / C0 / C0);
+    pusher.setElectronInfo(0, 1, v*gamma, 0, pusher.pTheta(0, 1, 0), gamma);
     for (int i = 0; i < 10; ++i) {
         pusher.step(1e-6);
         const auto p = pusher.pos();
@@ -44,7 +45,7 @@ TEST(APhiPusher, PlainLargeOrbit) {
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double r = -M0/Q0/B * u;
 
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = APhiPusher(ef, mf);
 
@@ -67,7 +68,7 @@ TEST(APhiPusher, PlainSmallOrbit) {
     const double v = u/gamma;
     const double omega = v/rLarmor;
 
-    const auto ef = std::make_shared<ZeroEField>();
+    const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
     auto pusher = APhiPusher(ef, mf);
 
@@ -108,7 +109,7 @@ TEST(APhiPusher, MirroredEzField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(
             totalEnergy/Q0,
             (potEnergy+kinEnergy)/Q0,
@@ -139,7 +140,7 @@ TEST(APhiPusher, ConstEzField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(
             totalEnergy/Q0,
             (potEnergy+kinEnergy)/Q0,
@@ -169,7 +170,7 @@ TEST(APhiPusher, ConstErField) {
         pusher.step(dt);
         const auto p = pusher.pos();
         const double potEnergy = Q0*ef->pot(0, p.r);
-        const double kinEnergy = (pusher.gamma()-1.0)*(M0*C0*C0);
+        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
         ASSERT_NEAR(
             totalEnergy/Q0,
             (potEnergy+kinEnergy)/Q0,
@@ -204,7 +205,7 @@ static void auxConstBzEr(bool useDegradedLinearBzField = false)
 		aphi.step(dt);
 	}
 	const auto pAPhi = aphi.pos();
-	const double kinEnergyAPhi = (aphi.gamma() - 1.0)*(M0*C0*C0);
+	const double kinEnergyAPhi = (aphi.gammaCurrent() - 1.0)*(M0*C0*C0);
 	const double potEnergyAPhi = Q0 * ef->pot(pAPhi.z, pAPhi.r);
 	ASSERT_NEAR(r, pAPhi.r, r*1e-8);
 	ASSERT_NEAR(

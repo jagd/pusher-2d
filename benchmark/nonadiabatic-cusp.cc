@@ -3,7 +3,8 @@
 
 int main()
 {
-	const double Ez = -100e3 / 10e-2;
+	// const double Ez = -100e3 / 10e-2;
+	const double Ez = 0 / 10e-2; // even without electric field (gamma=const.) it does not work, why ?
     const double k = 100;
 	const double r0 = 1e-3;
     const double u0 = 1e8;
@@ -13,19 +14,19 @@ int main()
     auto aphi = APhiPusher(ef, mf);
 	auto boris = BorisPusher(ef, mf);
 	auto rk = RK4Pusher(ef, mf);
-	auto leapfrog = LeapFrog(ef, mf);
+	auto leapfrog = LeapFrogPusher(ef, mf);
 
 	// const double flux0 = r0 * r0*mf->bz(0, r0);
 
-	double dtScale = 16;
+	double dtScale = 0.125;
 	const double dt = 1e-15 * dtScale;
-	const int64_t maxStep = (1 << 20)/dtScale;
+	const int64_t maxStep = static_cast<int64_t>((1 << 20)/dtScale);
 	std::clog << "dt " << dt << '\n';
 
 	leapfrog.setElectronInfo(r0, 0, 0, 0, 0, u0);
 	boris.setElectronInfo(r0, 0, 0, 0, 0, u0);
 	rk.setElectronInfo(r0, 0, 0, 0, 0, u0);
-	aphi.setElectronInfo(0, r0, u0/u2gamma(u0), 0, aphi.pTheta(0, r0, 0), u2gamma(u0));
+	aphi.setElectronInfo(0, r0, u0, 0, aphi.pTheta(0, r0, 0), u2gamma(u0));
 
 	for (int64_t i = 0; i < maxStep; ++i) {
 		if (i % static_cast<int64_t>(std::ceil(256/dtScale)) == 0) {
