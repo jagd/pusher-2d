@@ -67,10 +67,10 @@ add_executable(const-bzez-largeorbit-demo const-bzez-largeorbit.cc)
 target_compile_definitions(const-bzez-largeorbit-demo PRIVATE DEMO)
 target_link_libraries(const-bzez-largeorbit-demo aphi-pusher)
 
-# Non-adiabatic: zero mag field
-add_executable(nonadiabatic-cusp-demo nonadiabatic-cusp.cc)
-target_compile_definitions(nonadiabatic-cusp-demo PRIVATE DEMO)
-target_link_libraries(nonadiabatic-cusp-demo aphi-pusher)
+# Mixed field reflection demo
+add_executable(mixed-reflection-demo mixed-reflection.cc)
+target_compile_definitions(mixed-reflection-demo PRIVATE DEMO)
+target_link_libraries(mixed-reflection-demo aphi-pusher)
 
 # Linear moving (Relativistic)
 add_executable(linear-relativistic linear-relativistic.cc)
