@@ -26,6 +26,11 @@ double u2gamma(double u)
     return std::sqrt(1.0+u*u/(C0*C0));
 }
 
+double usqr2gamma(double usqr)
+{
+    return std::sqrt(1.0+usqr/(C0*C0));
+}
+
 
 IPusher2D::IPusher2D(
     std::shared_ptr<IStaticEField> e,
@@ -184,11 +189,11 @@ void LeapFrogPusher::step(double dt)
     const PV3D b3d(br*planarNorm.x, br*planarNorm.y, magfield_->bz(zr.z, zr.r));
     const auto er = efield_->er(zr.z, zr.r);
     const PV3D e3d(er*planarNorm.x, er*planarNorm.y, efield_->ez(zr.z, zr.r));
-    const double gammaLastHalf = u2gamma(std::sqrt(norm2(uLastHalf_)));
+    const double gammaLastHalf = usqr2gamma(norm2(uLastHalf_));
     const PV3D vLastHalf = uLastHalf_ / gammaLastHalf;
     const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
     const PV3D uNextHalf = uLastHalf_ + a * dt; // becomes uNextHalf
-    const PV3D vNextHalf = uNextHalf / u2gamma(std::sqrt((norm2(uNextHalf))));
+    const PV3D vNextHalf = uNextHalf / usqr2gamma(norm2(uNextHalf));
 	pos_ += vNextHalf * dt;
 	uLastHalf_ = uNextHalf;
 }
@@ -206,7 +211,7 @@ PV3D LeapFrogPusher::uLastHalf() const
 
 double LeapFrogPusher::gammaLastHalf() const
 {
-    return u2gamma(std::sqrt(norm2(uLastHalf_)));
+    return usqr2gamma(norm2(uLastHalf_));
 }
 
 void RK4Pusher::setElectronInfo(double x, double y, double z, double ux, double uy, double uz)
@@ -224,7 +229,7 @@ static PV3D p2v(const PV3D &p)
 
 void RK4Pusher::step(double dt)
 {
-	const double gammaLast = u2gamma(std::sqrt(norm2(uLast_)));
+	const double gammaLast = usqr2gamma(norm2(uLast_));
 	const PV3D vLast = uLast_ / gammaLast;
 	const PV3D pLast = uLast_ * M0;
 	
@@ -277,5 +282,5 @@ PV3D RK4Pusher::f3D(const PV3D & pos, const PV3D & p) const
 
 double RK4Pusher::gammaCurrent() const
 {
-    return u2gamma(std::sqrt(norm2(uLast_)));
+    return usqr2gamma(norm2(uLast_));
 }
