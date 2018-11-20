@@ -14,6 +14,10 @@ double v2gamma(double v)
     return 1.0/(std::sqrt(1.0-v*v/(C0*C0)));
 }
 
+double vsqr2gamma(double vsqr)
+{
+    return 1.0/(std::sqrt(1.0-vsqr/(C0*C0)));
+}
 
 double v2u(double v)
 {
@@ -222,7 +226,6 @@ static PV3D p2v(const PV3D &p)
 
 void RK4Pusher::step(double dt)
 {
-	const double gammaLast = usqr2gamma(norm2(uLast_));
 	const PV3D pLast = uLast_ * M0;
 	
 	const PV3D r0 = dt * p2v(pLast);
@@ -238,7 +241,7 @@ void RK4Pusher::step(double dt)
 	const PV3D pNext = pLast + 1.0 / 6 * (p0 + 2 * p1 + 2 * p2 + p3);
 	const PV3D vNext = p2v(pNext);
 	pos_ += 1.0 / 6 * (r0 + 2 * r1 + 2 * r2 + r3);
-	uLast_ = vNext * v2gamma(std::sqrt(norm2(vNext)));
+	uLast_ = vNext * vsqr2gamma(norm2(vNext));
 }
 
 PV3D RK4Pusher::pos() const
