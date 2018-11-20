@@ -76,7 +76,7 @@ double BiUniformMagField::aTheta(double z, double r) const
 
 double BiUniformMagField::aTheta2z(double z, double r) const
 {
-    if (std::abs(z) <= -z0_) {
+    if (std::abs(z) > z0_) {
         return 0;
     }
 

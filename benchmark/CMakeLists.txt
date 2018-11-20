@@ -76,3 +76,8 @@ target_link_libraries(mixed-reflection-demo aphi-pusher)
 add_executable(linear-relativistic linear-relativistic.cc)
 target_compile_definitions(linear-relativistic PRIVATE DEMO)
 target_link_libraries(linear-relativistic aphi-pusher)
+
+# cusp with pure magnetic field
+add_executable(cusp-demo cusp.cc)
+target_compile_definitions(cusp-demo PRIVATE DEMO)
+target_link_libraries(cusp-demo aphi-pusher)
