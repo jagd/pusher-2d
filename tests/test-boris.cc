@@ -68,7 +68,7 @@ TEST(BorisPusher, ZeroFieldsWithMotion) {
 }
 
 
-TEST(BorisPusher, PlainLargeOrbit) {
+TEST(Pusher3D, PlainLargeOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double r = -M0/Q0/B * u;
@@ -78,20 +78,25 @@ TEST(BorisPusher, PlainLargeOrbit) {
 
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
-    auto pusher = BorisPusher(ef, mf);
+    auto boris = BorisPusher(ef, mf);
+    auto rk = RK4Pusher(ef, mf);
 
     const double dt = 1e-13;
     const double startAngle = dt * omega/2;
-    pusher.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle),0, 0, u, 0);
+    boris.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle),0, 0, u, 0);
+    rk.setElectronInfo(r*std::cos(0), r*std::sin(0),0, 0, u, 0);
     for (int i = 0; i < 10; ++i) {
-        pusher.step(dt);
-        const auto p = pusher.pos();
-        ASSERT_NEAR(r, std::sqrt(p.x*p.x+p.y*p.y), r*1e-6);
+        boris.step(dt);
+        rk.step(dt);
+        const auto pb = boris.pos();
+        ASSERT_NEAR(r, std::sqrt(pb.x*pb.x+pb.y*pb.y), r*1e-6);
+        const auto pr = rk.pos();
+        ASSERT_NEAR(r, std::sqrt(pr.x*pr.x+pr.y*pr.y), r*1e-6);
     }
 }
 
 
-TEST(BorisPusher, PlainSmallOrbit) {
+TEST(Pusher3D, PlainSmallOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double rLarmor = -M0/Q0/B * u; // ~ 0.5 mm
@@ -101,25 +106,32 @@ TEST(BorisPusher, PlainSmallOrbit) {
 
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
-    auto pusher = BorisPusher(ef, mf);
+    auto boris = BorisPusher(ef, mf);
+    auto rk = RK4Pusher(ef, mf);
 
     const double dt = 1e-13;
     const double startAngle = dt * omega/2;
     const double offset = 2*rLarmor;
-    pusher.setElectronInfo(offset+rLarmor*std::cos(startAngle), rLarmor*std::sin(startAngle),0, 0, u, 0);
+    boris.setElectronInfo(offset+rLarmor*std::cos(startAngle), rLarmor*std::sin(startAngle),0, 0, u, 0);
+    rk.setElectronInfo(offset+rLarmor*std::cos(0), rLarmor*std::sin(0),0, 0, u, 0);
     for (int i = 0; i < 10; ++i) {
-        pusher.step(dt);
-        const auto p = pusher.pos();
-        const double rSoll = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle+omega*dt*(i+1)));
-        ASSERT_NEAR(rSoll, std::sqrt(p.x*p.x+p.y*p.y), rLarmor*1e-6);
+        boris.step(dt);
+        rk.step(dt);
+        const auto pb = boris.pos();
+        const double rSollB = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle+omega*dt*(i+1)));
+        ASSERT_NEAR(rSollB, std::sqrt(pb.x*pb.x+pb.y*pb.y), rLarmor*1e-6);
+        const auto pr = rk.pos();
+        const double rSollR = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(0+omega*dt*(i+1)));
+        ASSERT_NEAR(rSollR, std::sqrt(pr.x*pr.x+pr.y*pr.y), rLarmor*1e-6); // RK4 performce worse than boris at rotating?
     }
 }
 
 
-TEST(BorisPusher, MirroredEzField) {
+TEST(Pusher3D, MirroredEzField) {
     const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
     const auto mf = std::make_shared<ConstBzField>(0);
-    auto pusher = BorisPusher(ef, mf);
+    auto boris = BorisPusher(ef, mf);
+    auto rk = BorisPusher(ef, mf);
 
     const double zInit = -10e-2;
     const double totalEnergy = Q0*ef->pot(zInit, 0);
@@ -131,15 +143,22 @@ TEST(BorisPusher, MirroredEzField) {
     const int orderOffset = 15;
     int64_t steps = maxSteps >> orderOffset;
     double dt = minDt*(1 << orderOffset);
-    pusher.setElectronInfo(r, 0, zInit, 0, 0, 0);
+    boris.setElectronInfo(r, 0, zInit, 0, 0, 0);
+    rk.setElectronInfo(r, 0, zInit, 0, 0, 0);
     for (int i = 0; i < steps; ++i) {
-        pusher.step(dt);
-        const auto p = pusher.pos();
-        const double potEnergy = Q0*ef->pot(p.z, 0);
-        const double kinEnergy = (pusher.gammaCurrent()-1.0)*(M0*C0*C0);
-        ASSERT_NEAR(totalEnergy/Q0, (potEnergy+kinEnergy)/Q0, std::abs(totalEnergy/Q0)*1e-5);
+        boris.step(dt);
+        rk.step(dt);
+        const auto pb = boris.pos();
+        const double potEnergyB = Q0*ef->pot(pb.z, 0);
+        const double kinEnergyB = (boris.gammaCurrent()-1.0)*(M0*C0*C0);
+        ASSERT_NEAR(totalEnergy/Q0, (potEnergyB+kinEnergyB)/Q0, std::abs(totalEnergy/Q0)*1e-5);
+        const auto pr = rk.pos();
+        const double potEnergyR = Q0*ef->pot(pr.z, 0);
+        const double kinEnergyR = (rk.gammaCurrent()-1.0)*(M0*C0*C0);
+        ASSERT_NEAR(totalEnergy/Q0, (potEnergyR+kinEnergyR)/Q0, std::abs(totalEnergy/Q0)*1e-5);
     }
-    ASSERT_NEAR(refZ, pusher.pos().z, std::abs(refZ*1e-5));
+    ASSERT_NEAR(refZ, boris.pos().z, std::abs(refZ*1e-5));
+    ASSERT_NEAR(refZ, rk.pos().z, std::abs(refZ*1e-5));
 }
 
 
