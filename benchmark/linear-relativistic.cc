@@ -16,7 +16,7 @@ int main()
     auto rk = RK4Pusher(ef, mf);
 
     const double dtScale = 4096;
-    const int64_t steps = static_cast<int64_t>(1 << 14)/dtScale;
+    const int64_t steps = static_cast<int64_t>((1 << 14)/dtScale);
     const double dt = 1e-15*dtScale;
     const double vInitHalf = -Ez * Q0/M0*dt / 2 / (std::sqrt(1+(dt*dt/4)*Ez*Ez*Q0*Q0/(M0*M0*C0*C0)));
     const double uInitHalf = v2u(vInitHalf);

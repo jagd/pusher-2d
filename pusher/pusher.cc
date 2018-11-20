@@ -223,7 +223,6 @@ static PV3D p2v(const PV3D &p)
 void RK4Pusher::step(double dt)
 {
 	const double gammaLast = usqr2gamma(norm2(uLast_));
-	const PV3D vLast = uLast_ / gammaLast;
 	const PV3D pLast = uLast_ * M0;
 	
 	const PV3D r0 = dt * p2v(pLast);

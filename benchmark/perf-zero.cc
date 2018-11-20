@@ -5,33 +5,33 @@
 class ZeroField : public IStaticMagField, public IStaticEField
 {
     // Inherited via IStaticMagField
-    virtual double aTheta(double z, double r) const override
+    virtual double aTheta(double, double) const override
     {
         return 0.0;
     }
-    virtual double aTheta2z(double z, double r) const override
+    virtual double aTheta2z(double, double) const override
     {
         return 0.0;
     }
-    virtual double aTheta2r(double z, double r) const override
+    virtual double aTheta2r(double, double) const override
     {
         return 0.0;
     }
-    virtual double br(double z, double r) const override
+    virtual double br(double, double) const override
     {
         return 0.0;
     }
-    virtual double bz(double z, double r) const override
+    virtual double bz(double, double) const override
     {
         return 0.0;
     }
 
     // Inherited via IStaticEField
-    virtual double ez(double z, double r) const override
+    virtual double ez(double, double) const override
     {
         return 0.0;
     }
-    virtual double er(double z, double r) const override
+    virtual double er(double, double) const override
     {
         return 0.0;
     }
