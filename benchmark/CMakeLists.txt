@@ -73,8 +73,11 @@ target_compile_definitions(mixed-reflection-demo PRIVATE DEMO)
 target_link_libraries(mixed-reflection-demo aphi-pusher)
 
 # Linear moving (Relativistic)
+add_executable(linear-relativistic-demo linear-relativistic.cc)
+target_compile_definitions(linear-relativistic-demo PRIVATE DEMO)
+target_link_libraries(linear-relativistic-demo aphi-pusher)
+
 add_executable(linear-relativistic linear-relativistic.cc)
-target_compile_definitions(linear-relativistic PRIVATE DEMO)
 target_link_libraries(linear-relativistic aphi-pusher)
 
 # cusp with pure magnetic field
