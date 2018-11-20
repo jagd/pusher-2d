@@ -4,10 +4,10 @@ TEST_REGISTER(MagField
 TEST_LINK_LIBRARY(MagField ${PROJECT_NAME})
 
 
-TEST_REGISTER(Boris
-    test-boris.cc
+TEST_REGISTER(Pushers3D
+    test-pushers-3d.cc
 )
-TEST_LINK_LIBRARY(Boris ${PROJECT_NAME})
+TEST_LINK_LIBRARY(Pushers3D ${PROJECT_NAME})
 
 
 TEST_REGISTER(APhi
