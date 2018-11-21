@@ -217,36 +217,32 @@ void RK4Pusher::setElectronInfo(double x, double y, double z, double ux, double 
 	u_ = PV3D(ux, uy, uz);
 }
 
-static PV3D p2v(const PV3D &p)
-{
-	const auto u = p / M0 / C0;
-	const auto gamma = std::sqrt(1 + norm2(u));
-	return p / M0 / gamma;
-}
-
 void RK4Pusher::step(double dt)
 {
-	const PV3D pLast = u_ * M0;
-	
-	const PV3D r0 = dt * p2v(pLast);
-	const PV3D p0 = dt * f3D(pos_, pLast);
+    const auto u = u_;
 
-    const auto p0HalfMore = pLast + p0 / 2;
-	const auto r1 = dt * p2v(p0HalfMore);
-	const auto p1 = dt * f3D(pos_ + r0/2, p0HalfMore);
+    const auto v0 = u / usqr2gamma(norm2(u));
+    const auto r0 = dt * v0;
+	const auto u0 = dt * a3D(pos_, v0);
 
-    const auto p1HalfMore = pLast + p1 / 2;
-	const auto r2 = dt * p2v(p1HalfMore);
-	const auto p2 = dt * f3D(pos_ + r1/2, p1HalfMore);
+    const auto u0HalfMore = u + u0 / 2;
+    const auto v0HalfMore = u0HalfMore / usqr2gamma(norm2(u0HalfMore));
+    const auto r1 = dt * v0HalfMore;
+	const auto u1 = dt * a3D(pos_ + r0/2, v0HalfMore);
 
-    const auto p2More = pLast + p2;
-	const auto r3 = dt * p2v(p2More);
-	const auto p3 = dt * f3D(pos_ + r2, p2More);
+    const auto u1HalfMore = u + u1 / 2;
+    const auto v1HalfMore = u1HalfMore / usqr2gamma(norm2(u1HalfMore));
+	const auto r2 = dt * v1HalfMore;
+	const auto u2 = dt * a3D(pos_ + r1/2, v1HalfMore);
 
-	const PV3D pNext = pLast + 1.0 / 6 * (p0 + 2 * p1 + 2 * p2 + p3);
-	const PV3D vNext = p2v(pNext);
+    const auto u2More = u + u2;
+    const auto v2More = u2More / usqr2gamma(norm2(u2More));
+    const auto r3 = dt * v2More;
+	const auto u3 = dt * a3D(pos_ + r2, v2More);
+
+	const PV3D uNext = u + 1.0 / 6 * (u0 + 2 * u1 + 2 * u2 + u3);
 	pos_ += 1.0 / 6 * (r0 + 2 * r1 + 2 * r2 + r3);
-	u_ = vNext * vsqr2gamma(norm2(vNext));
+    u_ = uNext;
 }
 
 PV3D RK4Pusher::pos() const
@@ -275,9 +271,9 @@ PV3D RK4Pusher::e3D(const PV3D & pos) const
 	return PV3D(er*planarNorm.x, er*planarNorm.y, efield_->ez(zr.z, zr.r));
 }
 
-PV3D RK4Pusher::f3D(const PV3D & pos, const PV3D & p) const
+PV3D RK4Pusher::a3D(const PV3D & pos, const PV3D & v) const
 {
-	return Q0 * (cross(p2v(p), b3D(pos)) + e3D(pos));
+    return Q0/M0 * (cross(v, b3D(pos)) + e3D(pos));
 }
 
 double RK4Pusher::gammaCurrent() const

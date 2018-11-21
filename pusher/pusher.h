@@ -43,7 +43,7 @@ public:
 private:
 	PV3D b3D(const PV3D &pos) const;
 	PV3D e3D(const PV3D &pos) const;
-	PV3D f3D(const PV3D &pos, const PV3D &v) const;
+	PV3D a3D(const PV3D &pos, const PV3D &v) const;
     PV3D pos_;
     PV3D u_; //! u := gamma * v
 };
