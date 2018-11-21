@@ -45,7 +45,7 @@ private:
 	PV3D e3D(const PV3D &pos) const;
 	PV3D f3D(const PV3D &pos, const PV3D &v) const;
     PV3D pos_;
-    PV3D uLast_; //! u := gamma * v
+    PV3D u_; //! u := gamma * v
 };
 
 class LeapFrogPusher: public IPusher2D
