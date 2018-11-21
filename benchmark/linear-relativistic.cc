@@ -6,9 +6,11 @@
 
 int main()
 {
+    std::cout.precision(std::numeric_limits<double>::max_digits10);
     const double r = 1;
     const double Ez = -1e8;
-    const double uz0 = -2e8; // free to change
+    const double uz0 = -1e8; // free to change
+    const double exactETotal = (std::sqrt((uz0*uz0 /C0/C0)+1)-1) *M0*C0*C0 / Q0 * 1e-3;
     const auto ef = std::make_shared<ConstEzField>(Ez);
     const auto mf = std::make_shared<ConstBzField>(0);
 
@@ -20,9 +22,9 @@ int main()
 #ifdef DEMO
     const double dtScale = 256;
 #else
-    for (double dtScale = 4096; dtScale > 100; dtScale /= 1.01) {
+    for (double dtScale = 8192*2; dtScale > 0.01; dtScale /= 2) {
 #endif
-        const int64_t steps = static_cast<int64_t>((1 << 12) / dtScale);
+        const int64_t steps = static_cast<int64_t>((1 << 14) / dtScale);
         const double dt = 1e-15*dtScale;
         const double uInitHalf = uz0 - Q0 * Ez / M0 * dt / 2;
         lf.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
@@ -58,6 +60,7 @@ int main()
                 << boris.pos().z << ' '
                 << aphi.pos().z << ' '
                 << rk.pos().z << ' '
+                << exactETotal << ' '
                 << (potEnergyBoris + kinEnergyBoris) / Q0 / 1e3 << ' '
                 << (potEnergyRK + kinEnergyRK) / Q0 / 1e3 << '\n';
         }
