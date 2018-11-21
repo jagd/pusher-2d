@@ -231,12 +231,17 @@ void RK4Pusher::step(double dt)
 	const PV3D r0 = dt * p2v(pLast);
 	const PV3D p0 = dt * f3D(pos_, pLast);
 
-	const auto r1 = dt * p2v(pLast + p0/2);
-	const auto p1 = dt * f3D(pos_ + r0/2, pLast + p0/2);
-	const auto r2 = dt * p2v(pLast + p1/2);
-	const auto p2 = dt * f3D(pos_ + r1/2, pLast + p1/2);
-	const auto r3 = dt * p2v(pLast + p2);
-	const auto p3 = dt * f3D(pos_ + r2, pLast + p2);
+    const auto p0HalfMore = pLast + p0 / 2;
+	const auto r1 = dt * p2v(p0HalfMore);
+	const auto p1 = dt * f3D(pos_ + r0/2, p0HalfMore);
+
+    const auto p1HalfMore = pLast + p1 / 2;
+	const auto r2 = dt * p2v(p1HalfMore);
+	const auto p2 = dt * f3D(pos_ + r1/2, p1HalfMore);
+
+    const auto p2More = pLast + p2;
+	const auto r3 = dt * p2v(p2More);
+	const auto p3 = dt * f3D(pos_ + r2, p2More);
 
 	const PV3D pNext = pLast + 1.0 / 6 * (p0 + 2 * p1 + 2 * p2 + p3);
 	const PV3D vNext = p2v(pNext);
