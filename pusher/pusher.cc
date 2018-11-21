@@ -221,9 +221,9 @@ void RK4Pusher::step(double dt)
 {
     const auto u = u_;
 
-    const auto v0 = u / usqr2gamma(norm2(u));
-    const auto r0 = dt * v0;
-	const auto u0 = dt * a3D(pos_, v0);
+    const auto vInit = u / usqr2gamma(norm2(u));
+    const auto r0 = dt * vInit;
+	const auto u0 = dt * a3D(pos_, vInit);
 
     const auto u0HalfMore = u + u0 / 2;
     const auto v0HalfMore = u0HalfMore / usqr2gamma(norm2(u0HalfMore));
@@ -240,9 +240,8 @@ void RK4Pusher::step(double dt)
     const auto r3 = dt * v2More;
 	const auto u3 = dt * a3D(pos_ + r2, v2More);
 
-	const PV3D uNext = u + 1.0 / 6 * (u0 + 2 * u1 + 2 * u2 + u3);
+    u_ = u + 1.0 / 6 * (u0 + 2 * u1 + 2 * u2 + u3);
 	pos_ += 1.0 / 6 * (r0 + 2 * r1 + 2 * r2 + r3);
-    u_ = uNext;
 }
 
 PV3D RK4Pusher::pos() const
