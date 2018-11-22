@@ -61,6 +61,8 @@ target_link_libraries(mirrored-ez-very-relativistic  aphi-pusher)
 add_executable(const-bzer-largeorbit-demo const-bzer-largeorbit.cc)
 target_compile_definitions(const-bzer-largeorbit-demo PRIVATE DEMO)
 target_link_libraries(const-bzer-largeorbit-demo aphi-pusher)
+add_executable(const-bzer-largeorbit const-bzer-largeorbit.cc)
+target_link_libraries(const-bzer-largeorbit aphi-pusher)
 
 # ConstBzEz
 add_executable(const-bzez-largeorbit-demo const-bzez-largeorbit.cc)
