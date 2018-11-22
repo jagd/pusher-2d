@@ -4,8 +4,9 @@
 
 int main()
 {
-    const double B = 1.0; // f ~ 28 GHz
-    const double u = 1e8; // f ~ 26 GHz considering gamma
+    std::cout.precision(std::numeric_limits<double>::max_digits10);
+    const double B = 1; // f ~ 28 GHz
+    const double u = 1.8e8; // 90 keV
     const double rLarmor = -M0/Q0/B * u;
     const double gamma = u2gamma(u);
     const double v = u/gamma;
@@ -18,7 +19,7 @@ int main()
     auto lf = LeapFrogPusher(ef, mf);
     auto rk = RK4Pusher(ef, mf);
 
-    const double offset = 2*rLarmor;
+    const double offset = 10000*rLarmor;
 
 #ifdef DEMO
     std::cout << "# 1:omega*dt 2:turns 3:rel_error_r_leapfrog 4:rel_error_r_boris 5:rel_error_r_aphi 6:rel_error_r_rk4\n";
@@ -27,8 +28,8 @@ int main()
                  "6:tol_gamma_leapfrog  7:tol_gamma_boris 8:tol:gamma_aphi 9:tol_gamma_rk4\n";
 #endif
 
-    for (double dt = 1e-12; dt > 1e-18; dt *= 0.5) {
-        const int64_t steps = static_cast<int64_t>(std::ceil(100*2*M_PI / (omega*dt)));
+    for (double dt = 1.3e-12; dt > 1e-14; dt *= std::pow(0.5, 1.0/8)) {
+        const int64_t steps = static_cast<int64_t>(std::round(100*2*M_PI / (omega*dt)));
         std::clog << "omega*dt: " << omega*dt << '\n';
         const double startAngle = dt * omega/2;
         aphi.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle)), 0, 0, aphi.pTheta(0, offset+rLarmor, u), gamma);
