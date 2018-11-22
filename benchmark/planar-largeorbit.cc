@@ -26,7 +26,7 @@ int main()
                  "6:tol_gamma_leapfrog  7:tol_gamma_boris 8:tol:gamma_aphi 9:tol_gamma_rk4\n";
 #endif
 
-    for (double dt = 1e-12; dt > 1e-18; dt *= 0.5) {
+    for (double dt = 1e-10; dt > 1e-18; dt *= std::pow(0.5, 1.0/8)) {
         const int64_t steps = static_cast<int64_t>(std::ceil(10*2*M_PI / (omega*dt)));
         std::clog << "omega*dt: " << omega*dt << '\n';
         const double startAngle = std::atan(dt * omega/2);

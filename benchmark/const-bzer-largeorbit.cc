@@ -30,17 +30,16 @@ int main()
     const double distance = std::abs((2*M_PI*10) / omega * v);
     const double totalEnergy = Q0*ef->pot(0, r) + (gamma-1)*(M0*C0*C0);
 
-    for (double dt = 1e-12; dt > 1e-15; dt *= 0.5) {
-        const int64_t steps = static_cast<int64_t>(distance / (v*dt));
+    for (double dt = 1e-10; dt > 1e-16; dt *= 0.5) {
+        const int64_t steps = static_cast<int64_t>(std::round(distance / (v*dt)));
         const double startAngle = std::atan(dt * omega / 2);
         boris.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle), 0, 0, u, 0);
         lf.setElectronInfo(r*std::cos(startAngle), r*std::sin(startAngle), 0, 0, u, 0);
         rk.setElectronInfo(r*std::cos(0), r*std::sin(0), 0, 0, u, 0);
         aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u), gamma);
         double trigger = 0;
-#ifdef DEMO
         std::clog << "omega*dt = " << omega * dt << '\n';
-#else
+#ifndef DEMO
         std::cout << omega * dt << ' ';
 #endif
         for (int i = 1; i <= steps; ++i) {
