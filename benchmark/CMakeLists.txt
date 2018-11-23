@@ -86,3 +86,6 @@ target_link_libraries(linear-relativistic aphi-pusher)
 add_executable(cusp-demo cusp.cc)
 target_compile_definitions(cusp-demo PRIVATE DEMO)
 target_link_libraries(cusp-demo aphi-pusher)
+
+add_executable(cusp cusp.cc)
+target_link_libraries(cusp aphi-pusher)
