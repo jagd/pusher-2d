@@ -368,7 +368,7 @@ PV2D RK4Pusher2D::dudtAt(const PV2D & pos)
     const double ez = efield_->ez(z, r);
     const double er = efield_->er(z, r);
     return PV2D(
-        -vTheta * magfield_->br(pos.z, pos.r) + Q0 / M0 * ez
+        -vTheta * magfield_->br(z, r) + Q0 / M0 * ez
         ,
         vTheta*(uTheta / r + Q0 / M0 * magfield_->bz(z, r)) + Q0 / M0 * er
     );
