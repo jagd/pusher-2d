@@ -110,6 +110,12 @@ inline double norm2(const PV3D& a)
     return a.x*a.x + a.y*a.y + a.z*a.z;
 }
 
+inline double norm2(const PV2D& a)
+{
+    // might yield better performance than dot(a, a)
+    return a.z*a.z + a.r*a.r;
+}
+
 inline PV3D &operator/=(PV3D &v, double a)
 {
     v.x /= a;
