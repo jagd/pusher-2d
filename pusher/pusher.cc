@@ -297,7 +297,7 @@ double RK4Pusher2D::extGammaHalf(
     const auto z = pos_.z;
     const auto r = pos_.r;
     const double disc = baseGamma * baseGamma + (2 * Q0 / M0 / C0 / C0) * dt * (
-        efield_->ez(z, r)*uTarget.r + efield_->er(z, r)*uTarget.r
+        efield_->ez(z, r)*uTarget.z + efield_->er(z, r)*uTarget.r
     );
     return (baseGamma + std::sqrt(disc)) / 2;
 }
