@@ -71,7 +71,7 @@ int main()
 #endif
 
 #if !defined(SINGLE_PUSHER) || defined(APHI_ONLY)
-    auto aphi = APhiPusher(zf, zf);
+    auto aphi = LeapFrogPusher2D(zf, zf);
     aphi.setElectronInfo(0, 1, 0, 0, aphi.pTheta(0, 1, 0), 1);
     const auto aphiBegin = std::chrono::steady_clock::now();
     for (int64_t i = 0; i < steps; ++i) {

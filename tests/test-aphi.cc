@@ -2,17 +2,23 @@
 #include <pusher/pusher.h>
 #include <memory>
 
-TEST(APhiPusher, Ctor) {
+TEST(LeapFrogPusher2D, Ctor) {
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
-    APhiPusher(ef, mf);
+    LeapFrogPusher2D(ef, mf);
+}
+
+TEST(RK4Pusher2D, Ctor) {
+    const auto ef = std::make_shared<ConstEzField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
+    RK4Pusher2D(ef, mf);
 }
 
 
-TEST(APhiPusher, ZeroFieldsWithoutMotion) {
+TEST(LeapFrogPusher2D, ZeroFieldsWithoutMotion) {
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
-    auto pusher = APhiPusher(ef, mf);
+    auto pusher = LeapFrogPusher2D(ef, mf);
     pusher.setElectronInfo(0,1,0,0,pusher.pTheta(0, 1, 0), 1.0);
     for (int i = 0; i < 10; ++i) {
         pusher.step(1e-6);
@@ -22,11 +28,24 @@ TEST(APhiPusher, ZeroFieldsWithoutMotion) {
     }
 }
 
-
-TEST(APhiPusher, ZeroFieldsWithMotion) {
+TEST(RK4Pusher2D, ZeroFieldsWithoutMotion) {
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
-    auto pusher = APhiPusher(ef, mf);
+    auto pusher = RK4Pusher2D(ef, mf);
+    pusher.setElectronInfo(0, 1, 0, 0, 0);
+    for (int i = 0; i < 10; ++i) {
+        pusher.step(1e-6);
+        const auto p = pusher.pos();
+        ASSERT_EQ(0, p.z);
+        ASSERT_EQ(1, p.r);
+    }
+}
+
+
+TEST(LeapFrogPusher2D, ZeroFieldsWithMotion) {
+    const auto ef = std::make_shared<ConstEzField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
+    auto pusher = LeapFrogPusher2D(ef, mf);
     const double dt = 1e-6;
     const double v = 1.0;
     const double gamma = 1 / std::sqrt(1 - v * v / C0 / C0);
@@ -39,15 +58,31 @@ TEST(APhiPusher, ZeroFieldsWithMotion) {
     }
 }
 
+TEST(RK4Pusher2D, ZeroFieldsWithMotion) {
+    const auto ef = std::make_shared<ConstEzField>(0);
+    const auto mf = std::make_shared<ConstBzField>(0);
+    auto pusher = RK4Pusher2D(ef, mf);
+    const double dt = 1e-6;
+    const double v = 1.0;
+    const double gamma = 1 / std::sqrt(1 - v * v / C0 / C0);
+    pusher.setElectronInfo(0, 1, v*gamma, 0, 0);
+    for (int i = 0; i < 10; ++i) {
+        pusher.step(1e-6);
+        const auto p = pusher.pos();
+        ASSERT_DOUBLE_EQ(1.0*dt*(i+1), p.z);
+        ASSERT_EQ(1, p.r);
+    }
+}
 
-TEST(APhiPusher, PlainLargeOrbit) {
+
+TEST(LeapFrogPusher2D, PlainLargeOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double r = -M0/Q0/B * u;
 
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
-    auto pusher = APhiPusher(ef, mf);
+    auto pusher = LeapFrogPusher2D(ef, mf);
 
     const double dt = 1e-13;
     pusher.setElectronInfo(0, r, 0, 0, pusher.pTheta(0, r, u), std::sqrt(1+u*u/C0/C0));
@@ -59,8 +94,26 @@ TEST(APhiPusher, PlainLargeOrbit) {
     }
 }
 
+TEST(RK4Pusher2D, PlainLargeOrbit) {
+    const double B = 1.0; // f ~ 28 GHz
+    const double u = 1e8; // f ~ 26 GHz considering gamma
+    const double r = -M0/Q0/B * u;
 
-TEST(APhiPusher, PlainSmallOrbit) {
+    const auto ef = std::make_shared<ConstEzField>(0);
+    const auto mf = std::make_shared<ConstBzField>(B);
+    auto pusher = RK4Pusher2D(ef, mf);
+
+    const double dt = 1e-13;
+    pusher.setElectronInfo(0, r, 0, 0, u);
+    for (int i = 0; i < 10; ++i) {
+        pusher.step(dt);
+        const auto p = pusher.pos();
+        ASSERT_EQ(0, p.z);
+        ASSERT_NEAR(r, p.r, r*1e-12);
+    }
+}
+
+TEST(LeapFrogPusher2D, PlainSmallOrbit) {
     const double B = 1.0; // f ~ 28 GHz
     const double u = 1e8; // f ~ 26 GHz considering gamma
     const double rLarmor = -M0/Q0/B * u;
@@ -70,7 +123,7 @@ TEST(APhiPusher, PlainSmallOrbit) {
 
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
-    auto pusher = APhiPusher(ef, mf);
+    auto pusher = LeapFrogPusher2D(ef, mf);
 
     const double offset = 2*rLarmor;
     const double dt = 1e-13;
@@ -88,11 +141,36 @@ TEST(APhiPusher, PlainSmallOrbit) {
     }
 }
 
+TEST(RK4Pusher2D, PlainSmallOrbit) {
+    const double B = 1.0; // f ~ 28 GHz
+    const double u = 1e8; // f ~ 26 GHz considering gamma
+    const double rLarmor = -M0/Q0/B * u;
+    const double gamma = u2gamma(u);
+    const double v = u/gamma;
+    const double omega = v/rLarmor;
 
-TEST(APhiPusher, MirroredEzField) {
+    const auto ef = std::make_shared<ConstEzField>(0);
+    const auto mf = std::make_shared<ConstBzField>(B);
+    auto pusher = RK4Pusher2D(ef, mf);
+
+    const double offset = 2*rLarmor;
+    const double dt = 1e-13;
+    pusher.setElectronInfo(
+        0, offset+rLarmor,
+        0, 0, u
+    );
+    for (int i = 1; i <= 10; ++i) {
+        pusher.step(dt);
+        const auto p = pusher.pos();
+        const double rSoll = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i)));
+        ASSERT_NEAR(rSoll, p.r, rLarmor*1e-6);
+    }
+}
+
+TEST(LeapFrogPusher2D, MirroredEzField) {
     const auto ef = std::make_shared<MirroredEzField>(10e3/10e-2);
     const auto mf = std::make_shared<ConstBzField>(0);
-    auto pusher = APhiPusher(ef, mf);
+    auto pusher = LeapFrogPusher2D(ef, mf);
 
     const double zInit = -10e-2;
     const double totalEnergy = Q0*ef->pot(zInit, 0);
@@ -120,10 +198,10 @@ TEST(APhiPusher, MirroredEzField) {
 }
 
 
-TEST(APhiPusher, ConstEzField) {
+TEST(LeapFrogPusher2D, ConstEzField) {
     const auto ef = std::make_shared<ConstEzField>(-10e3/10e-2);
     const auto mf = std::make_shared<ConstBzField>(0);
-    auto pusher = APhiPusher(ef, mf);
+    auto pusher = LeapFrogPusher2D(ef, mf);
 
     const double zInit = -10e-2;
     const double totalEnergy = Q0*ef->pot(zInit, 0);
@@ -151,10 +229,10 @@ TEST(APhiPusher, ConstEzField) {
 }
 
 
-TEST(APhiPusher, ConstErField) {
+TEST(LeapFrogPusher2D, ConstErField) {
     const auto ef = std::make_shared<ConstErField>(-10e3/10e-2);
     const auto mf = std::make_shared<ConstBzField>(0);
-    auto pusher = APhiPusher(ef, mf);
+    auto pusher = LeapFrogPusher2D(ef, mf);
 
     const double rInit = 10e-2;
     const double totalEnergy = Q0*ef->pot(0, rInit);
@@ -194,7 +272,7 @@ static void auxConstBzEr(bool useDegradedLinearBzField = false)
     const auto mf = useDegradedLinearBzField ?
 		std::static_pointer_cast<IStaticMagField>(std::make_shared<LinearBzField>(Bz, 0)) :
 		std::static_pointer_cast<IStaticMagField>(std::make_shared<ConstBzField>(Bz));
-	auto aphi = APhiPusher(ef, mf);
+	auto aphi = LeapFrogPusher2D(ef, mf);
 
 	const double totalEnergy = Q0 * ef->pot(0, r) + (gamma - 1)*(M0*C0*C0);
 
@@ -216,13 +294,13 @@ static void auxConstBzEr(bool useDegradedLinearBzField = false)
 }
 
 
-TEST(APhiPusher, ConstBzErField)
+TEST(LeapFrogPusher2D, ConstBzErField)
 {
 	auxConstBzEr();
 }
 
 
-TEST(APhiPusher, LinearBzErField_k0)
+TEST(LeapFrogPusher2D, LinearBzErField_k0)
 {
 	auxConstBzEr(true);
 }

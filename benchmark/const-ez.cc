@@ -17,7 +17,7 @@ int main()
 
     auto lf = LeapFrogPusher(ef, mf);
     auto boris = BorisPusher(ef, mf);
-    auto aphi = APhiPusher(ef, mf);
+    auto aphi = LeapFrogPusher2D(ef, mf);
     auto rk = RK4Pusher(ef, mf);
 
 #ifdef DEMO

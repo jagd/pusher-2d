@@ -11,7 +11,7 @@ int main()
 
     const auto ef = std::make_shared<ConstEzField>(Ez);
     const auto mf = std::make_shared<LinearBzField>(10e-3, k);
-    auto aphi = APhiPusher(ef, mf);
+    auto aphi = LeapFrogPusher2D(ef, mf);
 	auto boris = BorisPusher(ef, mf);
 	auto rk = RK4Pusher(ef, mf);
 	auto leapfrog = LeapFrogPusher(ef, mf);

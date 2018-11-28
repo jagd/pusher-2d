@@ -91,10 +91,10 @@ private:
     double gammaAtPos_;
 };
 
-class APhiPusher: public IPusher2D
+class LeapFrogPusher2D: public IPusher2D
 {
 public:
-    APhiPusher(
+    LeapFrogPusher2D(
         std::shared_ptr<IStaticEField> e,
         std::shared_ptr<IStaticMagField> m
     ): IPusher2D(e, m) {}
@@ -113,6 +113,33 @@ public:
 private:
     PV2D pos_;
     PV2D uLastHalf_;
+    double pTheta_;
+    double totalEnergy_; //! in Volt*Q, where Q is signed
+};
+
+class RK4Pusher2D: public IPusher2D
+{
+public:
+    RK4Pusher2D(
+        std::shared_ptr<IStaticEField> e,
+        std::shared_ptr<IStaticMagField> m
+    ): IPusher2D(e, m) {}
+    double pTheta() const {return pTheta_;}
+    void step(double dt) override;
+    void setElectronInfo(
+        double z, double r,
+        double uz, double ur,
+        double uTheta
+    );
+    PV2D pos() const;
+    double gammaCurrent() const;
+private:
+    double extGammaHalf(double baseGamma, double dt, const PV2D &uTarget);
+    double gammaAt(const PV2D &pos) const;
+    PV2D dudtAt(const PV2D  &pos);
+    double uThetaAt(const PV2D  &pos);
+    PV2D pos_;
+    PV2D u_;
     double pTheta_;
     double totalEnergy_; //! in Volt*Q, where Q is signed
 };

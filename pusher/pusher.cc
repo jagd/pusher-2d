@@ -102,13 +102,13 @@ double BorisPusher::gammaCurrent() const
 }
 
 
-double APhiPusher::pTheta(double z, double r, double uTheta) const
+double LeapFrogPusher2D::pTheta(double z, double r, double uTheta) const
 {
     return r*(uTheta*M0 + magfield_->aTheta(z, r)*Q0);
 }
 
 
-void APhiPusher::step(double dt)
+void LeapFrogPusher2D::step(double dt)
 {
     const double g = gammaCurrent();
     const double z = pos_.z;
@@ -146,7 +146,7 @@ void APhiPusher::step(double dt)
 }
 
 
-void APhiPusher::setElectronInfo(
+void LeapFrogPusher2D::setElectronInfo(
     double z,
     double r,
     double uzLastHalf,
@@ -162,7 +162,7 @@ void APhiPusher::setElectronInfo(
     totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
 
-double APhiPusher::gammaCurrent() const
+double LeapFrogPusher2D::gammaCurrent() const
 {
     const double Ekin = totalEnergy_-Q0*efield_->pot(pos_.z, pos_.r);
 //    assert(Ekin > = 0);
@@ -170,12 +170,12 @@ double APhiPusher::gammaCurrent() const
     return gamma;
 }
 
-PV2D APhiPusher::vLastHalf() const
+PV2D LeapFrogPusher2D::vLastHalf() const
 {
     return uLastHalf_ / gammaCurrent();
 }
 
-PV2D APhiPusher::pos() const
+PV2D LeapFrogPusher2D::pos() const
 {
     return pos_;
 }
@@ -285,4 +285,96 @@ PV3D RK4Pusher::a3D(const PV3D & pos, const PV3D & v) const
 double RK4Pusher::gammaCurrent() const
 {
     return usqr2gamma(norm2(u_));
+}
+
+/// Based on the current position, advance dt/2
+double RK4Pusher2D::extGammaHalf(
+    double baseGamma, //! avoid duplicated gamma calculation
+    double dt,
+    const PV2D &uTarget
+)
+{
+    const auto z = pos_.z;
+    const auto r = pos_.r;
+    const double disc = baseGamma * baseGamma + (2 * Q0 / M0 / C0 / C0) * dt * (
+        efield_->ez(z, r)*uTarget.r + efield_->er(z, r)*uTarget.r
+    );
+    return (baseGamma + std::sqrt(disc)) / 2;
+}
+
+void RK4Pusher2D::step(double dt)
+{
+
+    const double g1 = gammaAt(pos_);
+    const auto u1 = u_;
+    const auto v1 = u1 / g1;
+    const auto hkr1 = dt * v1;
+	const auto hku1 = dt * dudtAt(pos_);
+
+    const auto u2 = u1 + hku1 / 2;
+    const auto v2 = u2 / extGammaHalf(g1, dt, u2);
+    const auto hkr2 = dt * v2;
+	const auto hku2 = dt * dudtAt(pos_ + hkr1/2);
+
+    const auto u3 = u1 + hku2 / 2;
+    const auto v3 = u3 / extGammaHalf(g1, dt, u3);
+	const auto hkr3 = dt * v3;
+	const auto hku3 = dt * dudtAt(pos_ + hkr2/2);
+
+    const auto u4 = u1 + hku3;
+    const auto v4 = u4 / extGammaHalf(g1, 2*dt, u4);
+    const auto hkr4 = dt * v4;
+	const auto hku4 = dt * dudtAt(pos_ + hkr3);
+
+    u_ = u1 + 1.0 / 6 * (hku1 + 2 * hku2 + 2 * hku3 + hku4);
+	pos_ += 1.0 / 6 * (hkr1 + 2 * hkr2 + 2 * hkr3 + hkr4);
+}
+
+void RK4Pusher2D::setElectronInfo(double z, double r, double uz, double ur, double uTheta)
+{
+    pos_ = PV2D(z, r);
+    u_ = PV2D(uz, ur);
+    pTheta_ = r*(uTheta*M0 + magfield_->aTheta(z, r)*Q0);
+    const double gamma = std::sqrt(
+        1 + (uz*uz + ur * ur + uTheta * uTheta) / (C0*C0)
+    );
+    totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
+}
+
+PV2D RK4Pusher2D::pos() const
+{
+    return pos_;
+}
+
+double RK4Pusher2D::gammaCurrent() const
+{
+    return gammaAt(pos_);
+}
+
+double RK4Pusher2D::gammaAt(const PV2D &pos) const
+{
+    const double Ekin = totalEnergy_-Q0*efield_->pot(pos_.z, pos_.r);
+//    assert(Ekin > = 0);
+    const double gamma = 1.0 + Ekin/(M0*C0*C0);
+    return gamma;
+}
+
+PV2D RK4Pusher2D::dudtAt(const PV2D & pos)
+{
+    const double uTheta = uThetaAt(pos);
+    const double vTheta = uTheta / gammaAt(pos);
+    const double z = pos.z;
+    const double r = pos.r;
+    const double ez = efield_->ez(z, r);
+    const double er = efield_->er(z, r);
+    return PV2D(
+        -vTheta * magfield_->br(pos.z, pos.r) + Q0 / M0 * ez
+        ,
+        vTheta*(uTheta / r + Q0 / M0 * magfield_->bz(z, r)) + Q0 / M0 * er
+    );
+}
+
+double RK4Pusher2D::uThetaAt(const PV2D & pos)
+{
+    return pTheta_/M0/pos.r - Q0 / M0 * magfield_->aTheta(pos.z, pos.r);
 }
