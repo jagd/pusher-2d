@@ -37,10 +37,6 @@ add_executable(perf-zero-rk4 perf-zero.cc)
 target_compile_definitions(perf-zero-rk4 PRIVATE RK4_ONLY)
 target_link_libraries(perf-zero-rk4 aphi-pusher)
 
-# Constant Ez
-add_executable(const-ez const-ez.cc)
-target_link_libraries(const-ez aphi-pusher)
-
 # Linear oscillator
 add_executable(mirrored-ez-demo-boris mirrored-ez.cc)
 target_compile_definitions(mirrored-ez-demo-boris PRIVATE DEMO_BORIS)
@@ -74,13 +70,13 @@ add_executable(mixed-reflection-demo mixed-reflection.cc)
 target_compile_definitions(mixed-reflection-demo PRIVATE DEMO)
 target_link_libraries(mixed-reflection-demo aphi-pusher)
 
-# Linear moving (Relativistic)
-add_executable(linear-relativistic-demo linear-relativistic.cc)
-target_compile_definitions(linear-relativistic-demo PRIVATE DEMO)
-target_link_libraries(linear-relativistic-demo aphi-pusher)
+# Constant Ez linear motion (Relativistic)
+add_executable(const-ez-demo const-ez.cc)
+target_compile_definitions(const-ez-demo PRIVATE DEMO)
+target_link_libraries(const-ez-demo aphi-pusher)
 
-add_executable(linear-relativistic linear-relativistic.cc)
-target_link_libraries(linear-relativistic aphi-pusher)
+add_executable(const-ez const-ez.cc)
+target_link_libraries(const-ez aphi-pusher)
 
 # cusp with pure magnetic field
 add_executable(cusp-demo cusp.cc)
