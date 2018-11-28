@@ -26,7 +26,7 @@ int main()
     auto boris = BorisPusher(ef, mf);
     auto lf = LeapFrogPusher(ef, mf);
     auto rk = RK4Pusher(ef, mf);
-    auto aphi = APhiPusher(ef, mf);
+    auto aphi = LeapFrogPusher2D(ef, mf);
 
     const double distance = std::abs((2*M_PI*10) / omega * v);
     const double totalEnergy = Q0*ef->pot(0, r) + (gamma-1)*(M0*C0*C0);

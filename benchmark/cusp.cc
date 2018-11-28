@@ -16,7 +16,7 @@ int main()
 
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<BiUniformMagField>(z0field, b1, b2);
-    auto aphi = APhiPusher(ef, mf);
+    auto aphi = LeapFrogPusher2D(ef, mf);
     auto boris = BorisPusher(ef, mf);
     auto rk = RK4Pusher(ef, mf);
     auto lf = LeapFrogPusher(ef, mf);

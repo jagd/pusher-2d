@@ -91,10 +91,10 @@ private:
     double gammaAtPos_;
 };
 
-class APhiPusher: public IPusher2D
+class LeapFrogPusher2D: public IPusher2D
 {
 public:
-    APhiPusher(
+    LeapFrogPusher2D(
         std::shared_ptr<IStaticEField> e,
         std::shared_ptr<IStaticMagField> m
     ): IPusher2D(e, m) {}

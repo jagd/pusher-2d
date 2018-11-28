@@ -35,7 +35,7 @@ static void demoBoris(BorisPusher &boris, double zInit)
 
 
 #ifdef DEMO_APHI
-static void demoAPhi(APhiPusher &aphi, double zInit)
+static void demoAPhi(LeapFrogPusher2D &aphi, double zInit)
 {
     double every = 1;
     for (double dt = 1e-12; dt > 1e-16; dt *= 0.5) {
@@ -76,7 +76,7 @@ int main()
     const auto ef = std::make_shared<MirroredEzField>(ez);
     const auto mf = std::make_shared<ConstBzField>(0);
     auto boris = BorisPusher(ef, mf);
-    auto aphi = APhiPusher(ef, mf);
+    auto aphi = LeapFrogPusher2D(ef, mf);
 
     const double zInit = -1e-2;
 

@@ -102,13 +102,13 @@ double BorisPusher::gammaCurrent() const
 }
 
 
-double APhiPusher::pTheta(double z, double r, double uTheta) const
+double LeapFrogPusher2D::pTheta(double z, double r, double uTheta) const
 {
     return r*(uTheta*M0 + magfield_->aTheta(z, r)*Q0);
 }
 
 
-void APhiPusher::step(double dt)
+void LeapFrogPusher2D::step(double dt)
 {
     const double g = gammaCurrent();
     const double z = pos_.z;
@@ -146,7 +146,7 @@ void APhiPusher::step(double dt)
 }
 
 
-void APhiPusher::setElectronInfo(
+void LeapFrogPusher2D::setElectronInfo(
     double z,
     double r,
     double uzLastHalf,
@@ -162,7 +162,7 @@ void APhiPusher::setElectronInfo(
     totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
 
-double APhiPusher::gammaCurrent() const
+double LeapFrogPusher2D::gammaCurrent() const
 {
     const double Ekin = totalEnergy_-Q0*efield_->pot(pos_.z, pos_.r);
 //    assert(Ekin > = 0);
@@ -170,12 +170,12 @@ double APhiPusher::gammaCurrent() const
     return gamma;
 }
 
-PV2D APhiPusher::vLastHalf() const
+PV2D LeapFrogPusher2D::vLastHalf() const
 {
     return uLastHalf_ / gammaCurrent();
 }
 
-PV2D APhiPusher::pos() const
+PV2D LeapFrogPusher2D::pos() const
 {
     return pos_;
 }
@@ -227,29 +227,28 @@ void RK4Pusher::setElectronInfo(double x, double y, double z, double ux, double 
 
 void RK4Pusher::step(double dt)
 {
-    const auto u = u_;
+    const auto u1 = u_;
+    const auto v1 = u1 / usqr2gamma(norm2(u1));
+    const auto hkr1 = dt * v1;
+	const auto hku1 = dt * a3D(pos_, v1);
 
-    const auto vInit = u / usqr2gamma(norm2(u));
-    const auto r0 = dt * vInit;
-	const auto u0 = dt * a3D(pos_, vInit);
+    const auto u2 = u1 + hku1 / 2;
+    const auto v2 = u2 / usqr2gamma(norm2(u2));
+    const auto hkr2 = dt * v2;
+	const auto hku2 = dt * a3D(pos_ + hkr1/2, v2);
 
-    const auto u0HalfMore = u + u0 / 2;
-    const auto v0HalfMore = u0HalfMore / usqr2gamma(norm2(u0HalfMore));
-    const auto r1 = dt * v0HalfMore;
-	const auto u1 = dt * a3D(pos_ + r0/2, v0HalfMore);
+    const auto u3 = u1 + hku2 / 2;
+    const auto v3 = u3 / usqr2gamma(norm2(u3));
+	const auto hkr3 = dt * v3;
+	const auto hku3 = dt * a3D(pos_ + hkr2/2, v3);
 
-    const auto u1HalfMore = u + u1 / 2;
-    const auto v1HalfMore = u1HalfMore / usqr2gamma(norm2(u1HalfMore));
-	const auto r2 = dt * v1HalfMore;
-	const auto u2 = dt * a3D(pos_ + r1/2, v1HalfMore);
+    const auto u4 = u1 + hku3;
+    const auto v4 = u4 / usqr2gamma(norm2(u4));
+    const auto hkr4 = dt * v4;
+	const auto hku4 = dt * a3D(pos_ + hkr3, v4);
 
-    const auto u2More = u + u2;
-    const auto v2More = u2More / usqr2gamma(norm2(u2More));
-    const auto r3 = dt * v2More;
-	const auto u3 = dt * a3D(pos_ + r2, v2More);
-
-    u_ = u + 1.0 / 6 * (u0 + 2 * u1 + 2 * u2 + u3);
-	pos_ += 1.0 / 6 * (r0 + 2 * r1 + 2 * r2 + r3);
+    u_ = u1 + 1.0 / 6 * (hku1 + 2 * hku2 + 2 * hku3 + hku4);
+	pos_ += 1.0 / 6 * (hkr1 + 2 * hkr2 + 2 * hkr3 + hkr4);
 }
 
 PV3D RK4Pusher::pos() const

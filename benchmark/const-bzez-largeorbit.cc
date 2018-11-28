@@ -13,7 +13,7 @@ int main()
 
     const auto ef = std::make_shared<ConstEzField>(Ez);
     const auto mf = std::make_shared<ConstBzField>(Bz);
-    auto aphi = APhiPusher(ef, mf);
+    auto aphi = LeapFrogPusher2D(ef, mf);
     auto boris = BorisPusher(ef, mf);
 
     const double dz = 1e-5;
