@@ -79,10 +79,6 @@ add_executable(const-ez const-ez.cc)
 target_link_libraries(const-ez aphi-pusher)
 
 # Linearly varying Ez linear motion (Relativistic)
-add_executable(linear-ez-demo linear-ez.cc)
-target_compile_definitions(linear-ez-demo PRIVATE DEMO)
-target_link_libraries(linear-ez-demo aphi-pusher)
-
 add_executable(linear-ez linear-ez.cc)
 target_link_libraries(linear-ez aphi-pusher)
 
