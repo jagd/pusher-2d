@@ -74,3 +74,22 @@ double ConstErField::er(double, double) const
 {
     return er_;
 }
+
+LinearEzField::LinearEzField(double ez0, double k): ez0_(ez0), k_(k)
+{
+}
+
+double LinearEzField::pot(double z, double) const
+{
+    return -(ez0_ * z + k_ * z*z / 2);
+}
+
+double LinearEzField::ez(double z, double) const
+{
+    return ez0_ + k_ * z;
+}
+
+double LinearEzField::er(double, double) const
+{
+    return 0.0;
+}

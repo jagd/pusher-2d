@@ -37,6 +37,18 @@ private:
     const double er_;
 };
 
+/// @brief  E(z) = Ez0 + k*z
+class LinearEzField: public IStaticEField
+{
+public:
+    LinearEzField(double ez0, double k);
+    virtual double pot(double z, double r) const override;
+    virtual double ez(double z, double r) const override;
+    virtual double er(double z, double r) const override;
+private:
+    const double ez0_;
+    const double k_;
+};
 
 /// a mirrored symmetric field, which has inifnite length.
 /// z=0 is the symmetric plane. Field strength Ez at z>=0,
