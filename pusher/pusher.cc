@@ -118,11 +118,19 @@ void APhiPusher::step(double dt)
     const double p2mr = pTheta_/ (M0*r);
     const double uTheta = p2mr - Q0 / M0 * magfield_->aTheta(z, r);
     const double vTheta = uTheta / g;
+#if 0
     const PV2D dudt(
         Q0 / M0 * (vTheta* magfield_->aTheta2z(z, r) + ez)
         ,
         vTheta*(p2mr / r + Q0 / M0 * magfield_->aTheta2r(z, r)) + Q0 / M0 * er
     );
+#else
+    const PV2D dudt(
+        -vTheta * magfield_->br(z, r) + Q0 / M0 * ez
+        ,
+        vTheta*(uTheta / r + Q0 / M0 * magfield_->bz(z, r)) + Q0 / M0 * er
+    );
+#endif
     const PV2D uNextHalf = uLastHalf_ + dt * dudt;
 #ifdef GAMMA_CORRECTION_APHI
     // discriminant
