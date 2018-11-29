@@ -9,14 +9,6 @@ class ZeroField : public IStaticMagField, public IStaticEField
     {
         return 0.0;
     }
-    virtual double aTheta2z(double, double) const override
-    {
-        return 0.0;
-    }
-    virtual double aTheta2r(double, double) const override
-    {
-        return 0.0;
-    }
     virtual double br(double, double) const override
     {
         return 0.0;
