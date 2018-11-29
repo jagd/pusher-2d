@@ -126,7 +126,7 @@ void LeapFrogPusher2D::step(double dt)
     );
 #else
     const PV2D dudt(
-        -vTheta * magfield_->br(z, r) + Q0 / M0 * ez
+        (-Q0 / M0) * (vTheta * magfield_->br(z, r) + ez)
         ,
         vTheta*(uTheta / r + Q0 / M0 * magfield_->bz(z, r)) + Q0 / M0 * er
     );
