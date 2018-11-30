@@ -138,7 +138,6 @@ private:
     double gammaAt(const PV2D &pos) const;
     PV2D pos_;
     PV2D u_;
-    PV2D v_;
     double pTheta_;
     double totalEnergy_; //! in Volt*Q, where Q is signed
 };

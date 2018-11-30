@@ -284,7 +284,7 @@ void LeapFrogPusher2DSync::step(double dt)
     const double dtHalf = dt / 2;
     // the first half step: use a correct v
     const auto v = u_ / gammaCurrent();
-    const auto posInter = pos_ + dtHalf * v_;
+    const auto posInter = pos_ + dtHalf * v;
     const double p2mrInter = pTheta_/ (M0*posInter.r);
     const double uThetaInter =  p2mrInter - Q0 / M0 * magfield_->aTheta(posInter.z, posInter.r);
     const double gInter = gammaAt(posInter);
@@ -313,8 +313,8 @@ void LeapFrogPusher2DSync::setElectronInfo(double z, double r, double uz, double
     pos_ = PV2D(z, r);
     u_ = PV2D(uz, ur);
     pTheta_ = pTheta(z, r, uTheta);
-    const double g = gammaAt(pos_);
-    v_ = u_ / g;
+    const double gamma = std::sqrt(1 + (uz*uz + ur * ur + uTheta * uTheta) / (C0*C0));
+    totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
 
 double LeapFrogPusher2DSync::pTheta(double z, double r, double uTheta) const
