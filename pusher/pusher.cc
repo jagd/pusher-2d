@@ -303,9 +303,9 @@ void LeapFrogPusher2DSync::step(double dt)
         ezInter*uNext.z + erInter*uNext.r
     );
     const double gNextAppr = (gInter + std::sqrt(disc)) / 2;
-    const auto vNextAppr = uNext / gNextAppr * dt;
+    const auto vNextAppr = uNext / gNextAppr;
     // the second half step: use a approximated (extrapolated) v
-    pos_ += vNextAppr * dtHalf;
+    pos_ = posInter + vNextAppr * dtHalf;
 }
 
 void LeapFrogPusher2DSync::setElectronInfo(double z, double r, double uz, double ur, double uTheta)
