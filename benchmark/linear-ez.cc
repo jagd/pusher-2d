@@ -18,6 +18,7 @@ int main()
     auto lf = LeapFrogPusher(ef, mf);
     auto boris = BorisPusher(ef, mf);
     auto lp2d = LeapFrogPusher2D(ef, mf);
+    auto lp2ds = LeapFrogPusher2DSync(ef, mf);
     auto rk = RK4Pusher(ef, mf);
 
     for (double dtScale = 8192 * 2; dtScale > 0.01; dtScale /= 2) {
@@ -27,11 +28,13 @@ int main()
         lf.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
         boris.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
         lp2d.setElectronInfo(0, r, uInitHalf, 0, lp2d.pTheta(0, r, 0), u2gamma(uz0));
+        lp2ds.setElectronInfo(0, r, uz0, 0, 0);
         rk.setElectronInfo(r, 0, 0, 0, 0, uz0);
         for (int64_t i = 1; i <= steps; ++i) {
             lf.step(dt);
             boris.step(dt);
             lp2d.step(dt);
+            lp2ds.step(dt);
             rk.step(dt);
         }
 
@@ -41,6 +44,7 @@ int main()
             << lf.pos().z << ' '
             << boris.pos().z << ' '
             << lp2d.pos().z << ' '
+            << lp2ds.pos().z << ' '
             << rk.pos().z << '\n';
     }
     return 0;

@@ -17,7 +17,8 @@ int main()
 
     auto lf = LeapFrogPusher(ef, mf);
     auto boris = BorisPusher(ef, mf);
-    auto aphi = LeapFrogPusher2D(ef, mf);
+    auto lf2d = LeapFrogPusher2D(ef, mf);
+    auto lf2ds = LeapFrogPusher2DSync(ef, mf);
     auto rk = RK4Pusher(ef, mf);
 
 #ifdef DEMO
@@ -28,16 +29,19 @@ int main()
         const int64_t steps = static_cast<int64_t>((1 << 14) / dtScale);
         const double dt = 1e-15*dtScale;
         const double uInitHalf = uz0 - Q0 * Ez / M0 * dt / 2;
+        const double uInitNextHalf = uz0 + Q0 * Ez / M0 * dt / 2;
         lf.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
         boris.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
-        aphi.setElectronInfo(0, r, uInitHalf, 0, aphi.pTheta(0, r, 0), u2gamma(uz0));
+        lf2d.setElectronInfo(0, r, uInitHalf, 0, lf2d.pTheta(0, r, 0), u2gamma(uz0));
+        lf2ds.setElectronInfo(0, r, uInitNextHalf, 0, 0);
         rk.setElectronInfo(r, 0, 0, 0, 0, uz0);
         std::clog << "dt = " << dt << '\n';
         int64_t j = 0;
         for (int64_t i = 1; i <= steps; ++i) {
             lf.step(dt);
             boris.step(dt);
-            aphi.step(dt);
+            lf2d.step(dt);
+            lf2ds.step(dt);
             rk.step(dt);
 #ifndef DEMO
         }
@@ -46,7 +50,7 @@ int main()
 #endif
         if (++j >= (128 / dtScale)) {
             j = 0;
-            std::clog << i * 100.0 / steps << " %\n" << aphi.gammaCurrent() << '\n';
+            std::clog << i * 100.0 / steps << " %\n" << lf2d.gammaCurrent() << '\n';
             const double potEnergyBoris = Q0 * ef->pot(boris.pos().z, 0);
             const double kinEnergyBoris = (boris.gammaCurrent() - 1.0)*(M0*C0*C0);
             const double potEnergyRK = Q0 * ef->pot(rk.pos().z, 0);
@@ -59,7 +63,8 @@ int main()
                 << exactZ << ' '
                 << lf.pos().z << ' '
                 << boris.pos().z << ' '
-                << aphi.pos().z << ' '
+                << lf2d.pos().z << ' '
+                << lf2ds.pos().z << ' '
                 << rk.pos().z << ' '
                 << exactETotal << ' '
                 << (potEnergyBoris + kinEnergyBoris) / Q0 / 1e3 << ' '

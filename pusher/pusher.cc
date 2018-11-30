@@ -313,7 +313,7 @@ void LeapFrogPusher2DSync::setElectronInfo(double z, double r, double uz, double
     pos_ = PV2D(z, r);
     u_ = PV2D(uz, ur);
     pTheta_ = pTheta(z, r, uTheta);
-    const double gamma = std::sqrt(1 + (uz*uz + ur * ur + uTheta * uTheta) / (C0*C0));
+    const double gamma = std::sqrt(1 + (uz*uz + ur*ur + uTheta*uTheta) / (C0*C0));
     totalEnergy_ = (gamma - 1) * (M0*C0*C0) + Q0*efield_->pot(z, r);
 }
 
