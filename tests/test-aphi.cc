@@ -92,11 +92,11 @@ TEST(LeapFrogPusher2D, PlainSmallOrbit) {
         std::sqrt(1+u*u/C0/C0)
     );
     sync.setElectronInfo(0, offset+rLarmor, 0, 0, u);
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 1; i <= 10; ++i) {
         async.step(dt);
         sync.step(dt);
-        const double rSollAsync = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i+1.5)));
-        const double rSollSync = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i+1)));
+        const double rSollAsync = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i+0.5)));
+        const double rSollSync = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*(i)));
         ASSERT_NEAR(rSollAsync, async.pos().r, rLarmor*1e-6);
         ASSERT_NEAR(rSollSync, sync.pos().r, rLarmor*1e-6);
     }
