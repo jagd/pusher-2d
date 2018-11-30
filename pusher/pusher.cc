@@ -278,3 +278,54 @@ double RK4Pusher::gammaCurrent() const
 {
     return usqr2gamma(norm2(u_));
 }
+
+void LeapFrogPusher2DSync::step(double dt)
+{
+    const double dtHalf = dt / 2;
+    // the first half step: use a correct v
+    const auto v = u_ / gammaCurrent();
+    const auto posInter = pos_ + dtHalf * v_;
+    const double p2mrInter = pTheta_/ (M0*posInter.r);
+    const double uThetaInter =  p2mrInter - Q0 / M0 * magfield_->aTheta(posInter.z, posInter.r);
+    const double gInter = gammaAt(posInter);
+    const double vThetaInter = uThetaInter / gInter;
+    const double ezInter = efield_->ez(posInter.z, posInter.r);
+    const double erInter = efield_->er(posInter.z, posInter.r);
+    const PV2D dudtInter(
+        Q0 / M0 * (ezInter - vThetaInter * magfield_->br(posInter.z, posInter.r))
+        ,
+        Q0 / M0 * erInter +
+        vThetaInter*(uThetaInter / posInter.r + Q0 / M0 * magfield_->bz(posInter.z, posInter.r))
+    );
+    const auto uNext = u_ + dudtInter * dt;
+    // discriminant
+    const double disc = gInter * gInter + (2 * Q0 / M0 / C0 / C0) * dt * (
+        ezInter*uNext.z + erInter*uNext.r
+    );
+    const double gNextAppr = (gInter + std::sqrt(disc)) / 2;
+    const auto vNextAppr = uNext / gNextAppr * dt;
+    // the second half step: use a approximated (extrapolated) v
+    pos_ += vNextAppr * dtHalf;
+}
+
+void LeapFrogPusher2DSync::setElectronInfo(double z, double r, double uz, double ur, double uTheta)
+{
+    pos_ = PV2D(z, r);
+    u_ = PV2D(uz, ur);
+    pTheta_ = pTheta(z, r, uTheta);
+    const double g = gammaAt(pos_);
+    v_ = u_ / g;
+}
+
+double LeapFrogPusher2DSync::pTheta(double z, double r, double uTheta) const
+{
+    return r*(uTheta*M0 + magfield_->aTheta(z, r)*Q0);
+}
+
+double LeapFrogPusher2DSync::gammaAt(const PV2D & pos) const
+{
+    const double Ekin = totalEnergy_-Q0*efield_->pot(pos.z, pos.r);
+//    assert(Ekin > = 0);
+    const double gamma = 1.0 + Ekin/(M0*C0*C0);
+    return gamma;
+}

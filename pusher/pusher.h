@@ -117,6 +117,32 @@ private:
     double totalEnergy_; //! in Volt*Q, where Q is signed
 };
 
+class LeapFrogPusher2DSync: public IPusher2D
+{
+public:
+    LeapFrogPusher2DSync(
+        std::shared_ptr<IStaticEField> e,
+        std::shared_ptr<IStaticMagField> m
+    ): IPusher2D(e, m) {}
+    double pTheta() const {return pTheta_;}
+    void step(double dt) override;
+    void setElectronInfo(
+        double z, double r,
+        double uz, double ur,
+        double uTheta
+    );
+    PV2D pos() const { return pos_; }
+    double gammaCurrent() const { return gammaAt(pos_); }
+private:
+    double pTheta(double z, double r, double uTheta) const;
+    double gammaAt(const PV2D &pos) const;
+    PV2D pos_;
+    PV2D u_;
+    PV2D v_;
+    double pTheta_;
+    double totalEnergy_; //! in Volt*Q, where Q is signed
+};
+
 double v2gamma(double v);
 double u2gamma(double u);
 double usqr2gamma(double usqr);
