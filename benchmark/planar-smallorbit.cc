@@ -70,7 +70,6 @@ int main()
         std::cout << '\n';
 #else
         double tolL2 = 0;
-        double tolR2 = 0;
         double tolB = 0;
         double tolL = 0;
         double tolR = 0;
