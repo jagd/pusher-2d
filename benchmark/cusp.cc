@@ -61,10 +61,10 @@ int main()
                     << fromPV3D(rk.pos()).r << '\n';
             }
 #else
-            errL = std::max(errL, abs(fromPV3D(lf.pos()).r - r0));
-            errB = std::max(errB, abs(fromPV3D(boris.pos()).r - r0));
-            errA = std::max(errA, abs(aphi.pos().r - r0));
-            errR = std::max(errR, abs(fromPV3D(rk.pos()).r - r0));
+            errL = std::max(errL, std::abs(fromPV3D(lf.pos()).r - r0));
+            errB = std::max(errB, std::abs(fromPV3D(boris.pos()).r - r0));
+            errA = std::max(errA, std::abs(aphi.pos().r - r0));
+            errR = std::max(errR, std::abs(fromPV3D(rk.pos()).r - r0));
             if (std::abs(lf.pos().z) < z0field)
                 ++stepL;
             if (std::abs(boris.pos().z) < z0field)
