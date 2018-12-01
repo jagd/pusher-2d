@@ -20,6 +20,11 @@ double ConstBzField::bz(double, double) const
     return bz_;
 }
 
+double ConstBzField::bTheta(double, double) const
+{
+    return 0.0;
+}
+
 double ConstBzField::aTheta(double, double r) const
 {
     return bz_*r/2;
@@ -40,6 +45,11 @@ double LinearBzField::br(double, double r) const
 double LinearBzField::bz(double z, double) const
 {
 	return b0_ + k_ * z;
+}
+
+double LinearBzField::bTheta(double, double) const
+{
+    return 0.0;
 }
 
 BiUniformMagField::BiUniformMagField(double z0, double b1, double b2)
@@ -73,4 +83,34 @@ double BiUniformMagField::bz(double z, double /*r*/) const
     }
 
     return coef_ * (1.0 / 5 * (std::pow(z, 5) + z05_) / z04_ - 2.0 / 3 * (std::pow(z, 3) + z03_) / z02_ + z + z0_) + b1_;
+}
+
+double BiUniformMagField::bTheta(double, double) const
+{
+    return 0.0;
+}
+
+OverlayConstAzimuthB::OverlayConstAzimuthB(const std::shared_ptr<IStaticMagField> &baseField, double bTheta)
+    :baseField_(baseField), bTheta_(bTheta)
+{
+}
+
+double OverlayConstAzimuthB::aTheta(double z, double r) const
+{
+    return baseField_->aTheta(z, r);
+}
+
+double OverlayConstAzimuthB::br(double z, double r) const
+{
+    return baseField_->br(z, r);
+}
+
+double OverlayConstAzimuthB::bz(double z, double r) const
+{
+    return baseField_->bz(z, r);
+}
+
+double OverlayConstAzimuthB::bTheta(double, double) const
+{
+    return bTheta_;
 }

@@ -1,6 +1,8 @@
 #ifndef MAGFIELD_H
 #define MAGFIELD_H
 
+#include <memory>
+
 class IStaticMagField
 {
 public:
@@ -9,6 +11,7 @@ public:
     virtual double aTheta(double z, double r) const = 0;
     virtual double br(double z, double r) const = 0;
     virtual double bz(double z, double r) const = 0;
+    virtual double bTheta(double z, double r) const = 0;
 };
 
 
@@ -20,6 +23,7 @@ public:
     virtual double aTheta(double z, double r) const override;
     virtual double br(double z, double r) const override;
     virtual double bz(double z, double r) const override;
+    virtual double bTheta(double z, double r) const;
 private:
     const double bz_;
 };
@@ -35,6 +39,7 @@ public:
     virtual double aTheta(double z, double r) const override;
     virtual double br(double z, double r) const override;
     virtual double bz(double z, double r) const override;
+    virtual double bTheta(double z, double r) const;
 private:
     const double b0_;
     const double k_;
@@ -50,7 +55,7 @@ public:
     virtual double aTheta(double z, double r) const override;
     virtual double br(double z, double r) const override;
     virtual double bz(double z, double r) const override;
-
+    virtual double bTheta(double z, double r) const;
 private:
     const double z0_;
     const double z02_;
@@ -60,6 +65,19 @@ private:
     const double b1_;
     const double b2_;
     const double coef_;
+};
+
+class OverlayConstAzimuthB : public IStaticMagField
+{
+public:
+    OverlayConstAzimuthB(const std::shared_ptr<IStaticMagField> &baseField, double bTheta);
+    virtual double aTheta(double z, double r) const override;
+    virtual double br(double z, double r) const override;
+    virtual double bz(double z, double r) const override;
+    virtual double bTheta(double z, double r) const;
+private:
+    const std::shared_ptr<IStaticMagField> baseField_;
+    double bTheta_;
 };
 
 #endif // MAGFIELD_H

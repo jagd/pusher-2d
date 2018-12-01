@@ -17,6 +17,10 @@ class ZeroField : public IStaticMagField, public IStaticEField
     {
         return 0.0;
     }
+    virtual double bTheta(double, double) const override
+    {
+        return 0.0;
+    }
 
     // Inherited via IStaticEField
     virtual double ez(double, double) const override
