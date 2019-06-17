@@ -19,6 +19,7 @@ int main()
     auto boris = BorisPusher(ef, mf);
     auto aphi = LeapFrogPusher2D(ef, mf);
     auto rk = RK4Pusher(ef, mf);
+    auto rk2d = RK4Pusher2D(ef, mf);
 
 #ifdef DEMO
     const double dtScale = 256;
@@ -31,6 +32,7 @@ int main()
         lf.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
         boris.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
         aphi.setElectronInfo(0, r, uInitHalf, 0, aphi.pTheta(0, r, 0), u2gamma(uz0));
+        rk2d.setElectronInfo(0, r, uz0, 0, 0);
         rk.setElectronInfo(r, 0, 0, 0, 0, uz0);
         std::clog << "dt = " << dt << '\n';
         int64_t j = 0;
@@ -39,6 +41,7 @@ int main()
             boris.step(dt);
             aphi.step(dt);
             rk.step(dt);
+            rk2d.step(dt);
 #ifndef DEMO
         }
         const int64_t i = steps;
@@ -60,6 +63,7 @@ int main()
                 << lf.pos().z << ' '
                 << boris.pos().z << ' '
                 << aphi.pos().z << ' '
+                << rk2d.pos().z << ' '
                 << rk.pos().z << ' '
                 << exactETotal << ' '
                 << (potEnergyBoris + kinEnergyBoris) / Q0 / 1e3 << ' '
