@@ -14,7 +14,6 @@ TEST(RK4Pusher2D, Ctor) {
     RK4Pusher2D(ef, mf);
 }
 
-
 TEST(LeapFrogPusher2D, ZeroFieldsWithoutMotion) {
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(0);
@@ -112,6 +111,7 @@ TEST(RK4Pusher2D, PlainLargeOrbit) {
         ASSERT_NEAR(r, p.r, r*1e-12);
     }
 }
+
 
 TEST(LeapFrogPusher2D, PlainSmallOrbit) {
     const double B = 1.0; // f ~ 28 GHz

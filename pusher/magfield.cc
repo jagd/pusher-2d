@@ -25,31 +25,11 @@ double ConstBzField::aTheta(double, double r) const
     return bz_*r/2;
 }
 
-double ConstBzField::aTheta2z(double, double) const
-{
-    return 0;
-}
-
-double ConstBzField::aTheta2r(double, double) const
-{
-    return bz_/2;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 double LinearBzField::aTheta(double z, double r) const
 {
 	return bz(z, r) * r / 2;
-}
-
-double LinearBzField::aTheta2z(double, double r) const
-{
-	return k_ * r / 2;
-}
-
-double LinearBzField::aTheta2r(double z, double r) const
-{
-	return bz(z, r) / 2;
 }
 
 double LinearBzField::br(double, double r) const
@@ -72,20 +52,6 @@ BiUniformMagField::BiUniformMagField(double z0, double b1, double b2)
 double BiUniformMagField::aTheta(double z, double r) const
 {
     return bz(z, r)*r/2;
-}
-
-double BiUniformMagField::aTheta2z(double z, double r) const
-{
-    if (std::abs(z) > z0_) {
-        return 0;
-    }
-
-    return coef_ * (std::pow(z, 4) / z04_ - 2 * std::pow(z, 2) / z02_ + 1)*r/2;
-}
-
-double BiUniformMagField::aTheta2r(double z, double r) const
-{
-    return bz(z, r)/2;
 }
 
 double BiUniformMagField::br(double z, double r) const
