@@ -345,7 +345,7 @@ double RK4Pusher2D::gammaCurrent() const
 
 double RK4Pusher2D::gammaAt(const PV2D &pos) const
 {
-    const double Ekin = totalEnergy_-Q0*efield_->pot(pos_.z, pos_.r);
+    const double Ekin = totalEnergy_-Q0*efield_->pot(pos.z, pos.r);
 //    assert(Ekin > = 0);
     const double gamma = 1.0 + Ekin/(M0*C0*C0);
     return gamma;
