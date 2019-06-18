@@ -279,6 +279,7 @@ double RK4Pusher::gammaCurrent() const
     return usqr2gamma(norm2(u_));
 }
 
+/// Not correct !!! No idea how to implement this function!
 /// Based on the current position, advance dt/2
 double RK4Pusher2D::extGammaHalf(
     double baseGamma, //! avoid duplicated gamma calculation
