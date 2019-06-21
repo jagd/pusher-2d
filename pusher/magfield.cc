@@ -74,3 +74,18 @@ double BiUniformMagField::bz(double z, double /*r*/) const
 
     return coef_ * (1.0 / 5 * (std::pow(z, 5) + z05_) / z04_ - 2.0 / 3 * (std::pow(z, 3) + z03_) / z02_ + z + z0_) + b1_;
 }
+
+double ConstBrField::aTheta(double z, double) const
+{
+    return -br_*z;
+}
+
+double ConstBrField::br(double, double) const
+{
+    return br_;
+}
+
+double ConstBrField::bz(double z, double r) const
+{
+    return -br_*z/r;
+}

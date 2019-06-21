@@ -40,6 +40,18 @@ private:
     const double k_;
 };
 
+/// A zero field can be created for ctor(0)
+class ConstBrField : public IStaticMagField
+{
+public:
+    ConstBrField(double br): br_(br) {}
+    virtual double aTheta(double z, double r) const override;
+    virtual double br(double z, double r) const override;
+    virtual double bz(double z, double r) const override;
+private:
+    const double br_;
+};
+
 
 /// @brief Uniform B-fields for |z|>z0, inbetween there is a infinity
 ///        smooth transition
