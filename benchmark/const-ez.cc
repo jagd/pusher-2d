@@ -13,7 +13,8 @@ int main()
     const double uz0 = -1e8; // free to change
     const double exactETotal = (std::sqrt((uz0*uz0 /C0/C0)+1)-1) *M0*C0*C0 / Q0 * 1e-3;
     const auto ef = std::make_shared<ConstEzField>(Ez);
-    const auto mf = std::make_shared<ConstBzField>(0);
+    // free to change, Br=0 will yield the exact solution, which is independent of initial velocity
+    const auto mf = std::make_shared<ConstBrField>(0);
 
     auto lf = LeapFrogPusher(ef, mf);
     auto boris = BorisPusher(ef, mf);
@@ -23,7 +24,7 @@ int main()
 #ifdef DEMO
     const double dtScale = 256;
 #else
-    for (double dtScale = 8192*2; dtScale > 0.01; dtScale /= 2) {
+    for (double dtScale = 8192*2; dtScale > 0.001; dtScale /= 2) {
 #endif
         const int64_t steps = static_cast<int64_t>((1 << 14) / dtScale);
         const double dt = 1e-15*dtScale;
@@ -56,7 +57,7 @@ int main()
             std::cout
                 << dt << ' '
                 << i * dt << ' '
-                << exactZ << ' '
+                << exactZ << ' ' // not exact anymore if Br != 0 !!!
                 << lf.pos().z << ' '
                 << boris.pos().z << ' '
                 << aphi.pos().z << ' '
