@@ -8,7 +8,7 @@
 int main()
 {
     std::cout.precision(std::numeric_limits<double>::max_digits10);
-    const double r = 1;
+    const double r = 1e9;
     const double Ez = -1e8;
     const double uz0 = -1e8; // free to change
     const double exactETotal = (std::sqrt((uz0*uz0 /C0/C0)+1)-1) *M0*C0*C0 / Q0 * 1e-3;
@@ -28,10 +28,19 @@ int main()
 #endif
         const int64_t steps = static_cast<int64_t>((1 << 14) / dtScale);
         const double dt = 1e-15*dtScale;
-        const double uInitHalf = uz0 - Q0 * Ez / M0 * dt / 2;
-        lf.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
-        boris.setElectronInfo(r, 0, 0, 0, 0, uInitHalf);
-        aphi.setElectronInfo(0, r, uInitHalf, 0, aphi.pTheta(0, r, 0), u2gamma(uz0));
+        PV3D uInitHalf(0, 0, uz0 - Q0 * Ez / M0 * dt / 2); // if Br = 0
+        if (mf->br(0,r) != 0) {
+            const int N = 1000000;
+            const double reverseSubStep = -dt / 2 / N;
+            rk.setElectronInfo(r, 0, 0, 0, 0, uz0);
+            for (int i = 0; i < N; ++i) {
+                rk.step(reverseSubStep);
+            }
+            uInitHalf = rk.uCurrent();
+        }
+        lf.setElectronInfo(r, 0, 0, uInitHalf.x, uInitHalf.y, uInitHalf.z);
+        boris.setElectronInfo(r, 0, 0, uInitHalf.x, uInitHalf.y, uInitHalf.z);
+        aphi.setElectronInfo(0, r, uInitHalf.z, fromPV3D(uInitHalf).r, aphi.pTheta(0, r, 0), u2gamma(uz0));
         rk.setElectronInfo(r, 0, 0, 0, 0, uz0);
         std::clog << "dt = " << dt << '\n';
         int64_t j = 0;
