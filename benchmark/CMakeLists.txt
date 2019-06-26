@@ -71,16 +71,12 @@ target_compile_definitions(mixed-reflection-demo PRIVATE DEMO)
 target_link_libraries(mixed-reflection-demo aphi-pusher)
 
 # Constant Ez linear motion (Relativistic)
-add_executable(const-ez-demo const-ez.cc)
-target_compile_definitions(const-ez-demo PRIVATE DEMO)
-target_link_libraries(const-ez-demo aphi-pusher)
+add_executable(ezbr-demo ezbr.cc)
+target_compile_definitions(ezbr-demo PRIVATE DEMO)
+target_link_libraries(ezbr-demo aphi-pusher)
 
-add_executable(const-ez const-ez.cc)
-target_link_libraries(const-ez aphi-pusher)
-
-# Linearly varying Ez linear motion (Relativistic)
-add_executable(linear-ez linear-ez.cc)
-target_link_libraries(linear-ez aphi-pusher)
+add_executable(ezbr ezbr.cc)
+target_link_libraries(ezbr aphi-pusher)
 
 # cusp with pure magnetic field
 add_executable(cusp-demo cusp.cc)
