@@ -5,9 +5,9 @@
 int main()
 {
     std::cout.precision(std::numeric_limits<double>::max_digits10);
-    const double B = 1; // f ~ 28 GHz
-    const double u = 1.8e8; // 90 keV
-    const double rLarmor = -M0/Q0/B * u;
+    const double B = 7; // f ~ 28 GHz
+    const double u = 1.8e8; // 90 keV @ 1.8e8
+    const double rLarmor = -M0/Q0/B * u; // ~ 0.5 mm @ 1e8
     const double gamma = u2gamma(u);
     const double v = u/gamma;
     const double omega = v/rLarmor;
@@ -19,7 +19,9 @@ int main()
     auto lf = LeapFrogPusher(ef, mf);
     auto rk = RK4Pusher(ef, mf);
 
-    const double offset = 10000*rLarmor;
+    std::clog << "Larmor radius = " << rLarmor << std::endl;
+
+    const double offset = 10e-3; // 10*rLarmor;
 
 #ifdef DEMO
     std::cout << "# 1:omega*dt 2:turns 3:rel_error_r_leapfrog 4:rel_error_r_boris 5:rel_error_r_aphi 6:rel_error_r_rk4\n";
@@ -28,8 +30,9 @@ int main()
                  "6:tol_gamma_leapfrog  7:tol_gamma_boris 8:tol:gamma_aphi 9:tol_gamma_rk4\n";
 #endif
 
-    for (double dt = 1.3e-12; dt > 1e-14; dt *= std::pow(0.5, 1.0/8)) {
-        const int64_t steps = static_cast<int64_t>(std::round(100*2*M_PI / (omega*dt)));
+    const int TURNS = 1000;
+    for (double dt = 1.3e-12; dt > 1e-16; dt *= std::pow(0.5, 1.0/8)) {
+        const int64_t steps = static_cast<int64_t>(std::round(TURNS*2*M_PI / (omega*dt)));
         std::clog << "omega*dt: " << omega*dt << '\n';
         const double startAngle = dt * omega/2;
         lf2d.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle)), 0, 0, lf2d.pTheta(0, offset+rLarmor, u), gamma);
@@ -89,24 +92,24 @@ int main()
             const auto pb = boris.pos();
             const auto pl = lf.pos();
             const auto pr = rk.pos();
-            tolL2 = std::max(tolL2, std::abs((pl2.r-rSoll)/rSoll));
-            tolB = std::max(tolB, std::abs((fromPV3D(pb).r-rSoll)/rSoll));
-            tolL = std::max(tolL, std::abs((fromPV3D(pl).r-rSoll)/rSoll));
-            tolR = std::max(tolR, std::abs((fromPV3D(pr).r-rSoll)/rSoll));
-            tolGL = std::max(tolGL, std::abs(lf.gammaLastHalf() - gamma));
-            tolGB = std::max(tolGB, std::abs(boris.gammaCurrent() - gamma));
-            tolGA = std::max(tolGA, std::abs(lf2d.gammaCurrent() - gamma));
-            tolGR = std::max(tolGR, std::abs(rk.gammaCurrent() - gamma));
+            tolL2  = std::max(tolL2, std::abs((pl2.r-rSoll)/rSoll));
+            tolB   = std::max(tolB, std::abs((fromPV3D(pb).r-rSoll)/rSoll));
+            tolL   = std::max(tolL, std::abs((fromPV3D(pl).r-rSoll)/rSoll));
+            tolR   = std::max(tolR, std::abs((fromPV3D(pr).r-rSoll)/rSoll));
+            tolGL  = std::max(tolGL, std::abs(lf.gammaLastHalf() - gamma));
+            tolGB  = std::max(tolGB, std::abs(boris.gammaCurrent() - gamma));
+            tolGA  = std::max(tolGA, std::abs(lf2d.gammaCurrent() - gamma));
+            tolGR  = std::max(tolGR, std::abs(rk.gammaCurrent() - gamma));
         }
         std::cout << omega*dt << ' '
-                  << tolL << ' '
-                  << tolB << ' '
-                  << tolL2 << ' '
-                  << tolR << ' '
-                  << tolGL << ' '
-                  << tolGB << ' '
-                  << tolGA << ' '
-                  << tolGR << '\n';
+                  << tolL     << ' '
+                  << tolB     << ' '
+                  << tolL2    << ' '
+                  << tolR     << ' '
+                  << tolGL    << ' '
+                  << tolGB    << ' '
+                  << tolGA    << ' '
+                  << tolGR    << '\n';
 #endif
     }
     return 0;
