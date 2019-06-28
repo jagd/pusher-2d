@@ -1,4 +1,4 @@
-#include <pusher/pusher.h>
+﻿#include <pusher/pusher.h>
 #include <iostream>
 #include <algorithm>
 
@@ -11,6 +11,7 @@ int main()
     const double gamma = u2gamma(u);
     const double v = u/gamma;
     const double omega = v/r;
+    const int TURNS =  1000;
 
     const auto ef = std::make_shared<ConstEzField>(0);
     const auto mf = std::make_shared<ConstBzField>(B);
@@ -27,7 +28,7 @@ int main()
 #endif
 
     for (double dt = 1e-10; dt > 1e-18; dt *= std::pow(0.5, 1.0/8)) {
-        const int64_t steps = static_cast<int64_t>(std::ceil(10*2*M_PI / (omega*dt)));
+        const int64_t steps = static_cast<int64_t>(std::ceil(TURNS*2*M_PI / (omega*dt)));
         std::clog << "omega*dt: " << omega*dt << '\n';
         const double startAngle = std::atan(dt * omega/2);
         aphi.setElectronInfo(0, r, 0, 0, aphi.pTheta(0, r, u), gamma);
@@ -93,7 +94,7 @@ int main()
                   << tolGL << ' '
                   << tolGB << ' '
                   << tolGA << ' '
-                  << tolGR << '\n';
+                  << tolGR << std::endl; // force flush
 #endif
     }
     return 0;

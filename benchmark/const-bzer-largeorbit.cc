@@ -13,8 +13,10 @@ int main()
     const double gamma = 1.2;
     const double r = 0.001131326056780128; // Mathematica
     const double v = gamma2v(gamma);
+    const int TURNS =  1000;
     const double omega = v/r;
     const double u = v*gamma;
+
 
     std::clog << "r = " << r << '\n'
               << "v = " << v << '\n'
@@ -28,7 +30,7 @@ int main()
     auto rk = RK4Pusher(ef, mf);
     auto aphi = LeapFrogPusher2D(ef, mf);
 
-    const double distance = std::abs((2*M_PI*10) / omega * v);
+    const double distance = std::abs((2*M_PI*TURNS) / omega * v);
     const double totalEnergy = Q0*ef->pot(0, r) + (gamma-1)*(M0*C0*C0);
 
     for (double dt = 1e-10; dt > 1e-16; dt *= 0.5) {
@@ -67,7 +69,7 @@ int main()
                     << aphi.pos().r << ' '
                     << fromPV3D(rk.pos()).r << ' '
                     << (potEnergyBoris + kinEnergyBoris - totalEnergy) / totalEnergy << ' '
-                    << (potEnergyRK + kinEnergyRK - totalEnergy) / totalEnergy << '\n';
+                    << (potEnergyRK + kinEnergyRK - totalEnergy) / totalEnergy << std::endl; // will be flushe
 #ifdef DEMO
                 trigger = 0;
             }
