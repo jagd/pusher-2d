@@ -1,8 +1,9 @@
-#ifndef WU_PV_H__
-#define WU_PV_H__
+#ifndef WU_PV_H_
+#define WU_PV_H_
 
 #include <iosfwd>
 #include <cmath>
+#include <utility>
 
 /**@breif Point or Vector in 2D cylindrical coordinate */
 struct PV2D {
@@ -53,6 +54,18 @@ inline PV2D &operator*=(PV2D &v, double a)
     return v;
 }
 
+inline PV2D operator+(const PV2D &a, PV2D &&b)
+{
+    b += a;
+    return std::move(b);
+}
+
+inline PV2D operator+(PV2D &&a, const PV2D &b)
+{
+    a += b;
+    return std::move(a);
+}
+
 inline PV2D operator+(const PV2D &a, const PV2D &b)
 {
     auto x = a;
@@ -65,6 +78,19 @@ inline PV2D operator-(const PV2D &a, const PV2D &b)
     auto x = a;
     x -= b;
     return x;
+}
+
+inline PV2D operator-(PV2D &&a, const PV2D &b)
+{
+    a -= b;
+    return std::move(a);
+}
+
+inline PV2D operator-(PV2D &&a)
+{
+    a.z = -a.z;
+    a.r = -a.r;
+    return std::move(a);
 }
 
 inline PV2D &operator/=(PV2D &v, double a)
@@ -81,7 +107,18 @@ inline PV2D operator*(double a, const PV2D &v)
     return x;
 }
 
+inline PV2D operator*(double a, PV2D &&v)
+{
+    v *= a;
+    return std::move(v);
+}
+
 inline PV2D operator*(const PV2D &v, double a)
+{
+    return a*v;
+}
+
+inline PV2D operator*(PV2D &&v, double a)
 {
     return a*v;
 }
@@ -93,6 +130,11 @@ inline PV2D operator/(const PV2D &v, double a)
     return x;
 }
 
+inline PV2D operator/(PV2D &&v, double a)
+{
+    v /= a;
+    return std::move(v);
+}
 
 inline PV3D cross(const PV3D& a, const PV3D& b)
 {
@@ -131,6 +173,12 @@ inline PV3D operator/(const PV3D &v, double a)
     return x;
 }
 
+inline PV3D operator/(PV3D &&v, double a)
+{
+    v /= a;
+    return std::move(v);
+}
+
 inline PV3D &operator*=(PV3D &v, double a)
 {
     v.x *= a;
@@ -162,7 +210,18 @@ inline PV3D operator*(double a, const PV3D &v)
     return x;
 }
 
+inline PV3D operator*(double a, PV3D &&v)
+{
+    v *= a;
+    return std::move(v);
+}
+
 inline PV3D operator*(const PV3D &v, double a)
+{
+    return a*v;
+}
+
+inline PV3D operator*(PV3D &&v, double a)
 {
     return a*v;
 }
@@ -174,11 +233,43 @@ inline PV3D operator+(const PV3D &a, const PV3D &b)
     return x;
 }
 
+inline PV3D operator+(PV3D &&a, const PV3D &b)
+{
+    a += b;
+    return std::move(a);
+}
+
+inline PV3D operator+(const PV3D &a, PV3D &&b)
+{
+    b += a;
+    return std::move(b);
+}
+
+inline PV3D operator+(PV3D &&a, PV3D &&b)
+{
+    b += a;
+    return std::move(b);
+}
+
 inline PV3D operator-(const PV3D &a, const PV3D &b)
 {
     auto x = a;
     x -= b;
     return x;
+}
+
+inline PV3D operator-(PV3D &&a, const PV3D &b)
+{
+    a -= b;
+    return std::move(a);
+}
+
+inline PV3D operator-(PV3D &&a)
+{
+    a.x -= -a.x;
+    a.y -= -a.y;
+    a.z -= -a.x;
+    return std::move(a);
 }
 
 std::ostream &operator<<(std::ostream &, const PV2D &);
