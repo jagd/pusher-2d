@@ -85,3 +85,6 @@ target_link_libraries(cusp-demo aphi-pusher)
 
 add_executable(cusp cusp.cc)
 target_link_libraries(cusp aphi-pusher)
+
+add_executable(check-rk4 check-rk4.cc)
+target_link_libraries(check-rk4 aphi-pusher)
