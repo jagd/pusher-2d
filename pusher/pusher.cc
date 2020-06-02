@@ -188,6 +188,9 @@ void LeapFrogPusher::step(double dt)
     const PV3D e3d(er*planarNorm.x, er*planarNorm.y, efield_->ez(zr.z, zr.r));
     const double gammaLastHalf = usqr2gamma(norm2(uLastHalf_));
     const PV3D vLastHalf = uLastHalf_ / gammaLastHalf;
+    // Mistake: In the folloning `a = ...`, b3d is staggered with vLastHalf !
+    //          The accuracy is decresed to the first order,
+    //          when vxB effect is significant.
     const PV3D a = Q0/M0 * (cross(vLastHalf, b3d) + e3d);
     const PV3D uNextHalf = uLastHalf_ + a * dt; // becomes uNextHalf
     const PV3D vNextHalf = uNextHalf / usqr2gamma(norm2(uNextHalf));
