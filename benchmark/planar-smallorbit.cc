@@ -92,10 +92,10 @@ int main()
             const auto pb = boris.pos();
             const auto pl = lf.pos();
             const auto pr = rk.pos();
-            tolL2  = std::max(tolL2, std::abs((pl2.r-rSoll)/rSoll));
-            tolB   = std::max(tolB, std::abs((fromPV3D(pb).r-rSoll)/rSoll));
-            tolL   = std::max(tolL, std::abs((fromPV3D(pl).r-rSoll)/rSoll));
-            tolR   = std::max(tolR, std::abs((fromPV3D(pr).r-rSoll)/rSoll));
+            tolL2  = std::max(tolL2, std::abs((pl2.r-rSoll)/rLarmor));
+            tolB   = std::max(tolB, std::abs((fromPV3D(pb).r-rSoll)/rLarmor));
+            tolL   = std::max(tolL, std::abs((fromPV3D(pl).r-rSoll)/rLarmor));
+            tolR   = std::max(tolR, std::abs((fromPV3D(pr).r-rSoll)/rLarmor));
             tolGL  = std::max(tolGL, std::abs(lf.gammaLastHalf() - gamma));
             tolGB  = std::max(tolGB, std::abs(boris.gammaCurrent() - gamma));
             tolGA  = std::max(tolGA, std::abs(lf2d.gammaCurrent() - gamma));
