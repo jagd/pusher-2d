@@ -35,14 +35,16 @@ int main()
         const int64_t steps = static_cast<int64_t>(std::round(TURNS*2*M_PI / (omega*dt)));
         std::clog << "omega*dt: " << omega*dt << '\n';
         const double startAngle = dt * omega/2;
-        lf2d.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle)), 0, 0, lf2d.pTheta(0, offset+rLarmor, u), gamma);
-        boris.setElectronInfo(offset+rLarmor*std::cos(startAngle), rLarmor*std::sin(startAngle),0, 0, u, 0);
+//        lf2d.setElectronInfo(0, std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(startAngle)), 0, 0, lf2d.pTheta(0, offset+rLarmor, u), gamma);
+        const double pTheta = (offset+rLarmor)*(u*M0 + mf->aTheta(0, offset+rLarmor)*Q0);
+        const double xLastHalfAbs = offset + rLarmor*std::cos(startAngle);
+        const double yLastHalfAbs = rLarmor*std::sin(startAngle);
+        const double angleUr = std::atan2(yLastHalfAbs, xLastHalfAbs) + M_PI/2-startAngle;
+        lf2d.setElectronInfo(0, offset+rLarmor, 0, u*std::cos(angleUr), pTheta, gamma);
+
+        boris.setElectronInfo(offset+rLarmor, 0,0, u*std::sin(startAngle), u*std::cos(startAngle), 0);
         lf.setElectronInfo(offset+rLarmor*std::cos(startAngle), rLarmor*std::sin(startAngle),0, 0, u, 0);
         rk.setElectronInfo(offset+rLarmor*std::cos(0), rLarmor*std::sin(0),0, 0, u, 0);
-        // in order to start from the same position
-        for (int i = 0; i < 1024; ++i) {
-            rk.step(dt / 2048);
-        }
 #ifdef DEMO
         if (dt < 1e-15)
             break;
@@ -87,7 +89,7 @@ int main()
             rk.step(dt);
             // omega*dt*i, i start from 1 instead of 0,
             // because the first step was considered in the intialization.
-            const double rSoll = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*i+startAngle));
+            const double rSoll = std::sqrt(offset*offset +rLarmor*rLarmor + 2*offset*rLarmor*std::cos(omega*dt*i));
             const auto pl2 = lf2d.pos();
             const auto pb = boris.pos();
             const auto pl = lf.pos();
