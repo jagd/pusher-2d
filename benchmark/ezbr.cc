@@ -36,7 +36,12 @@ int main()
         const double dt = 1e-15*dtScale;
         PV3D uInitHalf(0, 0, uz0 - Q0 * Ez0 / M0 * dt / 2); // exact for Br = 0 && Ek == 0
         if (mf->br(0,r) != 0 || Ek != 0) {
+#if 0
             const int N = 1000000;
+#else
+            // I fix the scenario-dependent number dt~8e-13 for better accuracy
+            const int N = std::max((int)std::ceil(dt/8e-13), 2);
+#endif
             const double reverseSubStep = -dt / 2 / N;
             rk.setElectronInfo(r, 0, 0, 0, 0, uz0);
             for (int i = 0; i < N; ++i) {
